@@ -62,7 +62,10 @@ def collect(source, output):
                 continue
             upper = path.name.upper()
             if (
-                upper.startswith(
+                # Qt uses SPDX names such as LGPL-3.0-only.txt inside LICENSES.
+                # Copy that entire tree, including names without a license prefix.
+                path.is_relative_to(root / "LICENSES")
+                or upper.startswith(
                     ("LICENSE", "LICENCE", "COPYING", "NOTICE", "COPYRIGHT")
                 )
                 or path.name == "qt_attribution.json"
@@ -83,10 +86,15 @@ def collect(source, output):
                                 f"Missing/outside attributed license: {path}"
                             )
                         selected.add(license_path)
-        if not (root / "LICENSES").is_dir() or (
-            module == "qtbase" and not (root / "LICENSES/LGPL-3.0-only.txt").is_file()
-        ):
-            raise ValueError(f"Missing Qt LGPL terms: {module}")
+        if not (root / "LICENSES").is_dir():
+            raise ValueError(f"Missing Qt license terms: {module}/LICENSES")
+        if module == "qtbase":
+            for name in ("LGPL-3.0-only.txt", "GPL-3.0-only.txt"):
+                path = root / "LICENSES" / name
+                if path not in selected or not path.stat().st_size:
+                    raise ValueError(
+                        f"Missing Qt license terms: {module}/LICENSES/{name}"
+                    )
         gathered += [(p, output / module / p.relative_to(root)) for p in selected]
         modules.append(
             {

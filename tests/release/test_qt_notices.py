@@ -12,6 +12,7 @@ spec = importlib.util.spec_from_file_location(
 )
 notices = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(notices)
+QT_MODULES = notices.MODULES
 
 
 @pytest.mark.parametrize("control", ["\n", "\r", "\t"])
@@ -53,6 +54,7 @@ def qt_sources(tmp_path, monkeypatch):
     licenses = root / "LICENSES"
     licenses.mkdir(parents=True)
     (licenses / "LGPL-3.0-only.txt").write_text("Synthetic license fixture")
+    (licenses / "GPL-3.0-only.txt").write_text("Synthetic GPL fixture")
     vendor = root / "src/3rdparty/vendor"
     vendor.mkdir(parents=True)
     (vendor / "LICENSE.vendor").write_text("Synthetic vendor license")
@@ -65,7 +67,7 @@ def qt_sources(tmp_path, monkeypatch):
     def git_output(command, **kwargs):
         # Only Git identity queries are stubbed; parsing, bounds and copying are real.
         if command[3:] == ["remote", "get-url", "origin"]:
-            return "https://code.qt.io/qt/qtbase.git\n"
+            return f"https://code.qt.io/qt/{Path(command[2]).name}.git\n"
         if command[3:] == ["describe", "--exact-match", "--tags", "HEAD"]:
             return "v" + notices.VERSION + "\n"
         if command[3:] == ["status", "--porcelain"]:
@@ -89,6 +91,46 @@ def test_collect_preserves_original_metadata_and_license_bytes(qt_sources):
     manifest = json.loads((output / "SOURCES.json").read_text(encoding="utf-8"))
     assert manifest["qtVersion"] == notices.VERSION
     assert manifest["modules"][0]["tag"] == "v" + notices.VERSION
+
+
+def test_collect_includes_entire_license_directories(qt_sources, monkeypatch):
+    source, _, output = qt_sources
+    monkeypatch.setattr(notices, "MODULES", QT_MODULES)
+    for module in QT_MODULES:
+        licenses = source / module / "LICENSES"
+        licenses.mkdir(parents=True, exist_ok=True)
+        # SPDX filenames do not start with LICENSE, COPYING or NOTICE.
+        for name in (
+            "LGPL-3.0-only.txt",
+            "GPL-3.0-only.txt",
+            "BSD-3-Clause.txt",
+            "nested/MIT.txt",
+        ):
+            path = licenses / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(f"Synthetic {module}/{name}\r\n".encode())
+    notices.collect(source, output)
+    for module in QT_MODULES:
+        expected = {
+            path.relative_to(source / module): path.read_bytes()
+            for path in (source / module / "LICENSES").rglob("*")
+            if path.is_file()
+        }
+        actual = {
+            path.relative_to(output / module): path.read_bytes()
+            for path in (output / module / "LICENSES").rglob("*")
+            if path.is_file()
+        }
+        assert actual == expected
+
+
+@pytest.mark.parametrize("name", ["LGPL-3.0-only.txt", "GPL-3.0-only.txt"])
+def test_missing_required_qt_terms_fail_before_copying(qt_sources, name):
+    source, _, output = qt_sources
+    (source / "qtbase/LICENSES" / name).unlink()
+    with pytest.raises(ValueError, match="Missing Qt license terms"):
+        notices.collect(source, output)
+    assert not output.exists()
 
 
 @pytest.mark.parametrize("license_file", ["missing.txt", "../../../../outside.txt"])

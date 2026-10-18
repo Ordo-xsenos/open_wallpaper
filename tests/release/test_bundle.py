@@ -96,6 +96,8 @@ def test_seal_zip_and_detect_changed_or_extra_files(payload, tmp_path):
         "platforms/qwindows.dll",
         "licenses/libarchive/copyright",
         "licenses/Qt/SOURCES.json",
+        "licenses/Qt/qtbase/LICENSES/LGPL-3.0-only.txt",
+        "licenses/Qt/qtbase/LICENSES/GPL-3.0-only.txt",
         "msvcp140.dll",
     ],
 )
