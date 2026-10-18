@@ -1,6 +1,6 @@
 # AetherWall 0.5.0-preview.1
 
-Internal preview for Windows 11 24H2+ x64. Public release acceptance is pending.
+Preview for Windows 11 24H2+ x64. Full hardware/install acceptance is pending.
 No performance, compatibility or power-efficiency guarantee is made.
 
 - Original GPU scenes, local library, per-monitor assignments and pause policies.
@@ -23,6 +23,6 @@ Test `--core-window` diagnostic mode before desktop mode. Windows installation,
 upgrade/uninstall, Explorer recovery, mixed-DPI outputs and integrated/discrete GPU
 acceptance remain NOT TESTED in the development Linux environment.
 
-Artifacts produced by CI are unsigned internal candidates. A successful build is
+Artifacts produced by CI are unsigned preliminary builds. A successful build is
 not a hardware/desktop acceptance result. See RELEASE.md and M5_TEST_PLAN.md in
-the source distribution for checks needed before sharing a public preview.
+the source distribution for remaining Windows acceptance checks.

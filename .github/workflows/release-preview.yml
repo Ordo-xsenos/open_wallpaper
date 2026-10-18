@@ -1,6 +1,8 @@
-name: M5 internal preview
+name: Windows preview release
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
   pull_request:
 
@@ -27,6 +29,8 @@ jobs:
           python -m pip install './server[test]'
           python -m pytest tests/release server/tests -q
   windows-preview:
+    outputs:
+      release-artifact-id: ${{ steps.release-files.outputs.artifact-id }}
     runs-on: windows-2022
     needs: policy
     steps:
@@ -54,7 +58,7 @@ jobs:
           }
           python tools/Collect-QtNotices.py --sources out/qt-sources --output out/qt-notices
           if ($LASTEXITCODE -ne 0) { throw 'Notice collection failed.' }
-          # Companion source materials; no public release is created by this workflow.
+          # Publish matching source materials alongside the binary preview.
           Get-ChildItem out/qt-sources -Directory | ForEach-Object {
             git -C $_.FullName archive --format=zip --output="$env:GITHUB_WORKSPACE/out/$($_.Name)-6.8.3-source.zip" HEAD
             if ($LASTEXITCODE -ne 0) { throw 'Qt source archive failed.' }
@@ -75,6 +79,17 @@ jobs:
           ./tools/Build-Release.ps1 -QtRoot $qt -QtNoticesRoot "$env:GITHUB_WORKSPACE/out/qt-notices" -Revision $env:GITHUB_SHA
           python tools/Package-Source.py
           if ($LASTEXITCODE -ne 0) { throw 'Source packaging failed.' }
+      - name: Retain publishable release files
+        id: release-files
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-release-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            out/release/
+            out/share/AetherWall-M5.zip*
+            out/*-6.8.3-source.zip
       - name: Retain internal artifacts and build evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -88,3 +103,27 @@ jobs:
             out/*-6.8.3-source.zip
             out/build/win-msvc-release/Testing/Temporary/
             out/build/win-msvc-release/CMakeFiles/CMakeConfigureLog.yaml
+
+  publish:
+    name: Publish GitHub pre-release
+    needs: [policy, windows-preview]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.windows-preview.outputs.release-artifact-id }}
+          merge-multiple: true
+          path: out/publish-input
+      - name: Verify assets and publish preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/Publish-Preview.py --assets out/publish-input

@@ -2,11 +2,11 @@
 
 ## Current milestone
 
-**M5 internal preview packaging implemented as source; Windows release acceptance pending.**
+**M5 preview packaging and automatic release workflow implemented; Windows release acceptance pending.**
 On 2026-10-18 the user authorized M3 and confirmed following the specification
 with a direct code implementation. M1/M2 Windows acceptance and the full M0
 regression matrix remain pending. This authorization is not a fabricated PASS.
-On 2026-10-18 the user authorized M4, then M5. No public release is authorized.
+On 2026-10-18 the user authorized M4, then M5, and automatic preview publication.
 No external deployment or hosting spend is implied.
 
 On 2026-10-17 the user reported successful M0 execution on a friend's Windows
@@ -26,16 +26,27 @@ recorded as a fabricated full matrix PASS.
   and removes only an autostart command pointing to its installed Core.
 - Fresh staging, Release/Qt version gates, official app-local CRT, SChannel/QML
   deployment, x64 PE checks, required dependency/notices checks and per-file hashes.
-- Exact-tag Qt source notice collection, companion source archives in CI, portable
-  binary ZIP and installer SHA-256 sidecars; no automatic public publication.
+- Exact-tag Qt source notice collection, companion source archives, portable
+  binary ZIP and installer SHA-256 sidecars; automatic GitHub pre-releases from main.
 - Internal Windows Release workflow and portable policy/server/packaging CI.
   Packaging policy tests use synthetic PE fixtures; they do not run executables.
-- Linux Manager builds and 70 CTest entries pass; 14 release policy tests and 12
-  server tests pass. PowerShell, ISCC/PE resource compilation, installed runtime,
-  real hardware and exact redistribution audit remain NOT TESTED, not inferred.
+- Linux Manager builds and 70 CTest entries pass; 32 release policy/notice/publication tests and 12
+  server tests pass. The user subsequently reported successful Windows CI jobs. Installed runtime,
+  real hardware and exact redistribution audit remain unverified.
 
 This is the source/build slice of M5. Completion requires the M5_TEST_PLAN.md
 Windows matrix and durable source/license materials before public distribution.
+
+## Automatic preview publication and project documentation
+
+- Successful main push/manual builds publish unique GitHub pre-releases with
+  installer, portable ZIP, SHA-256, application source and matching Qt sources.
+- PR/non-main builds cannot publish; only the publish job has repository write
+  permissions. Missing/corrupt assets fail before draft creation; failed uploads
+  never promote a draft. No stable-release or hardware acceptance is implied.
+- README now introduces the product, downloads, first run and limitations in Russian.
+  Detailed diagnostic/build commands moved to DEVELOPMENT.md.
+- Publication orchestration is tested with a fake gh process, not a real upload.
 
 ## M4 catalog slice
 
@@ -142,7 +153,8 @@ Core servers from different interactive sessions. Import can briefly delay rende
 | MSVC/fxc M1–M4 Core build and WIC/GPU rendering | NOT TESTED | No Windows SDK or interactive Windows session here |
 | Actual static Present count / transactional GPU reload | NOT TESTED | Follow M1_TEST_PLAN.md on Windows |
 | M0 desktop/input/recovery regressions | NOT TESTED | Needs actual Windows logs and results |
-| PowerShell and hosted CI execution | NOT TESTED | Scripts/workflow prepared, not run locally |
+| Windows build workflow | USER-REPORTED PASS | User reported successful Windows jobs after the notice/min-macro fixes; no local Windows execution |
+| Automatic release upload | NOT TESTED | New publish job and orchestration tests prepared; requires updated workflow on GitHub |
 
 Local libraries: nlohmann/json 3.11.3 (existing system header), libarchive 3.8.10,
 libwebp 1.6.0, zlib, GoogleTest 1.18.0. On this host nlohmann/json is in a nonstandard

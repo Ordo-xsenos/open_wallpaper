@@ -8,7 +8,7 @@ Linux, GCC 16.2.1, shared Qt 6.12. No MSVC/Windows SDK, PowerShell or ISCC here.
 | --- | --- | --- |
 | Manager/control build | PASS | `cmake --build --preset manager-dev` |
 | CTest | PASS | 70 entries; Unix socket subcase skips under sandbox restrictions |
-| Packaging policy | PASS | 24 tests: seal/ZIP/hash, tampering/extra files, missing notices/plugins/runtime, debug/private files, i386/link rejection, wrong Qt and false acceptance metadata; Qt attribution controls/BOM, malformed metadata diagnostics and license path bounds |
+| Packaging policy | PASS | 32 tests: seal/ZIP/hash, tampering/extra files, missing notices/plugins/runtime, debug/private files, i386/link rejection, wrong Qt and false acceptance metadata; Qt attribution controls/BOM, malformed metadata diagnostics and license path bounds; preview publication assets/checksums, main-only/draft publication and upload failures |
 | Server regression | PASS | 12 real in-process ASGI/SQLite tests |
 | Screenshots | PASS | Actual offscreen Linux Manager; explicitly labelled test transport, no GPU |
 | PowerShell, Windows PE resources, ISCC | NOT TESTED | Prepared source; needs Windows CI/local build |
@@ -73,7 +73,7 @@ for desktop/recovery/performance. Keep a backup of test data before schema upgra
 
 Replace results only with observed evidence. Public preview requires all applicable
 criteria, real integrated/discrete GPU performance reports, completed redistribution
-inventory and permanent companion sources. No public release was published.
+inventory and permanent companion sources. Automatic preview publication now follows successful main builds; hardware acceptance remains separate.
 
 ## Windows CI follow-up
 
@@ -91,3 +91,14 @@ then failed at `ScenePackage.cpp:85` with C2589/C2660/C2059 on `std::min`.
 before dependency headers for all Windows targets, alongside `WIN32_LEAN_AND_MEAN`.
 Linux Manager rebuild and all 70 CTest entries pass after this change. A fresh
 Windows workflow run is required to verify MSVC compilation and subsequent stages.
+
+## Release publication checks
+
+Run `python -m pytest tests/release -q` for asset completeness, checksum/ZIP
+corruption, duplicate downloads, PR/non-main rejection, draft-before-publish and
+failed-upload behavior. Publication tests stub only the gh process; no GitHub
+release is created by local tests. After pushing the workflow change to main,
+verify the publish job Summary link, Pre-release label, exact target commit,
+installer/portable/application/Qt source assets and SHA256SUMS.txt. A failed build
+or PR must have no publish job. A successful older workflow run must be rerun on
+the new commit to gain publication. Real upload verification is pending here.

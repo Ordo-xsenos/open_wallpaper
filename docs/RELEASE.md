@@ -1,7 +1,8 @@
-# Build an internal Windows preview
+# Build and publish a Windows preview
 
-M5 packaging is implemented as source; Windows build/install/hardware acceptance
-has not been run in this Linux workspace. This is not a ready-made installer.
+Windows preview artifacts are built in GitHub Actions. A user-reported successful
+Windows CI run produced the installer; installation/hardware acceptance is separate
+from compilation. See the repository Releases page for automatically published builds.
 
 ## Inputs
 
@@ -9,7 +10,7 @@ Use VS 2022 x64 Developer PowerShell, Windows SDK/fxc, CMake 3.28+, Ninja,
 Python 3.11+, Inno Setup 6.3+ and a shared Qt **6.8.3 msvc2022_64** kit.
 The development Manager may use newer Qt; the release payload is deliberately
 restricted to one Qt version and matching notices. Keep enough space for Qt sources.
-The workflow `M5 internal preview` prepares these inputs on Windows Server 2022;
+The workflow `Windows preview release` prepares these inputs on Windows Server 2022;
 its results do not establish Windows 11 desktop compatibility.
 
 ## Build
@@ -44,8 +45,8 @@ Expected outputs in `out/release/`:
 
 The stage remains under `out/release-stage/<id>/` for inspection. A failed build
 does not convert old artifacts into a successful release; inspect command exit
-status and hashes before using any output. Installer compilation and PowerShell
-scripts remain NOT TESTED locally until this procedure runs on Windows.
+status and hashes before using any output. PowerShell/installer compilation runs on the Windows CI host; Linux checks do
+not replace installation and hardware tests on Windows 11.
 
 ## Installation and data
 
@@ -70,9 +71,9 @@ purge-data option. For a fresh profile, back up/rename the data directory manual
 
 Run M5_TEST_PLAN.md on a standard-user Windows 11 machine with no Qt/VS on PATH.
 Complete AC-01–AC-16 and integrated/discrete GPU evidence. Audit deployed notices,
-ship permanent companion source materials, and decide code signing before a public
-release. CI only uploads internal artifacts and cannot publish a GitHub Release.
-No certificate, signing account, hosting or public release is configured.
+retain companion source materials and decide code signing before a stable release.
+Preview publication is automatic as described below. No signing certificate or
+catalog hosting is configured.
 
 ## Development screenshots
 
@@ -80,3 +81,31 @@ These are actual Linux offscreen Qt captures with an explicitly labelled injecte
 test transport and no GPU. They show the current UI, not Windows runtime results:
 [Discover](screenshots/m5-discover-linux.png) and
 [Settings/version](screenshots/m5-settings-linux.png).
+
+## Automatic GitHub Releases
+
+A push to `main` or a manual `release-preview.yml` run on `main` builds/tests the
+preview and publishes a **Pre-release** after both policy and Windows jobs succeed.
+Pull requests are built/tested but never published. Only the publication job has
+`contents: write`; it uses the repository's built-in `GITHUB_TOKEN`, not a personal
+access token. Repository/organization policy must permit this permission.
+
+Each run uses a new tag `v<VERSION>-build.<RUN_ID>.<ATTEMPT>` targeting the exact
+built commit. Existing releases/assets are never overwritten and previews are not
+marked as the stable Latest release. Use the repository's `/releases` page rather
+than `/releases/latest` to find previews. Before publishing, the script checks the
+complete installer/portable/source/Qt asset set, ZIP integrity and binary/source
+sidecar hashes, then generates `SHA256SUMS.txt` for every attached file.
+
+Creation/uploads occur as a draft. Only after upload succeeds does the job publish
+it. A failed upload may leave a draft visible to maintainers; it does not expose
+an incomplete public release. Rerunning the workflow uses a distinct run attempt.
+The release URL is written into the publish job's Summary. Build logs remain in
+Actions; download assets and matching Qt/application source companions are stored
+in Releases without the 14-day Actions artifact retention period.
+
+To publish after pushing the updated workflow, either wait for its automatic run
+or explicitly run `gh workflow run release-preview.yml --ref main`. Older successful
+runs do not gain the new publication job retrospectively. The binary files retain
+`packaging/release.json`'s application version; the tag identifies the particular
+build of that version.
