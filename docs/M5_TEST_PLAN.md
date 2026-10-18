@@ -8,7 +8,7 @@ Linux, GCC 16.2.1, shared Qt 6.12. No MSVC/Windows SDK, PowerShell or ISCC here.
 | --- | --- | --- |
 | Manager/control build | PASS | `cmake --build --preset manager-dev` |
 | CTest | PASS | 70 entries; Unix socket subcase skips under sandbox restrictions |
-| Packaging policy | PASS | 14 tests: seal/ZIP/hash, tampering/extra files, missing notices/plugins/runtime, debug/private files, i386/link rejection, wrong Qt and false acceptance metadata |
+| Packaging policy | PASS | 24 tests: seal/ZIP/hash, tampering/extra files, missing notices/plugins/runtime, debug/private files, i386/link rejection, wrong Qt and false acceptance metadata; Qt attribution controls/BOM, malformed metadata diagnostics and license path bounds |
 | Server regression | PASS | 12 real in-process ASGI/SQLite tests |
 | Screenshots | PASS | Actual offscreen Linux Manager; explicitly labelled test transport, no GPU |
 | PowerShell, Windows PE resources, ISCC | NOT TESTED | Prepared source; needs Windows CI/local build |
@@ -74,3 +74,13 @@ for desktop/recovery/performance. Keep a backup of test data before schema upgra
 Replace results only with observed evidence. Public preview requires all applicable
 criteria, real integrated/discrete GPU performance reports, completed redistribution
 inventory and permanent companion sources. No public release was published.
+
+## Windows CI follow-up
+
+The first user-run Windows preview reached Qt notice collection and failed with
+`JSONDecodeError: Invalid control character`. The collector now accepts literal
+control characters inside strings of the checked Qt attribution sources and UTF-8
+BOM, preserves original metadata/license bytes, and names malformed files in errors.
+The 24 packaging tests and 12 server tests pass locally after the fix. The Windows
+workflow must be rerun on the updated commit; full build/install acceptance remains
+pending until that run and the manual matrix complete.

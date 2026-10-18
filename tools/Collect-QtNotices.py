@@ -11,6 +11,26 @@ VERSION = json.loads((ROOT / "packaging/release.json").read_text())["qtVersion"]
 MODULES = ("qtbase", "qtdeclarative", "qtsvg", "qtshadertools", "qttranslations")
 
 
+def read_attributions(path):
+    # This reader is only for the pinned, origin/tag/cleanliness-checked Qt sources.
+    # Some attribution strings contain literal control characters (e.g. line breaks).
+    # Permit those inside strings without changing the copied source bytes or the
+    # strict parsers used for application settings, scenes and catalog responses.
+    try:
+        entries = json.loads(path.read_bytes().decode("utf-8-sig"), strict=False)
+    except json.JSONDecodeError as error:
+        raise ValueError(
+            f"Invalid Qt attribution {path}:{error.lineno}:{error.colno}: {error.msg}"
+        ) from error
+    if isinstance(entries, dict):
+        entries = [entries]
+    if not isinstance(entries, list) or any(
+        not isinstance(entry, dict) for entry in entries
+    ):
+        raise ValueError(f"Expected attribution object or object array: {path}")
+    return entries
+
+
 def collect(source, output):
     if output.exists():
         raise ValueError("Use a fresh notices destination")
@@ -49,10 +69,7 @@ def collect(source, output):
             ):
                 selected.add(path)
             if path.name == "qt_attribution.json":
-                entries = json.loads(path.read_text(encoding="utf-8"))
-                if isinstance(entries, dict):
-                    entries = [entries]
-                for entry in entries:
+                for entry in read_attributions(path):
                     license_files = entry.get("LicenseFile", [])
                     if isinstance(license_files, str):
                         license_files = [license_files]
@@ -94,7 +111,8 @@ def collect(source, output):
             },
             indent=2,
         )
-        + "\n"
+        + "\n",
+        encoding="utf-8",
     )
 
 
