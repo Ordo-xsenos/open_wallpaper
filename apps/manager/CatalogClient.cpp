@@ -72,10 +72,13 @@ CatalogClient::CatalogClient(QObject* parent, QNetworkAccessManager* network,
             fail("Cannot replace cached package.");
             return;
         }
-        if (!QFile::rename(temporary_->fileName(), final)) {
-            fail("Cannot commit verified package to cache.");
+        // close() keeps QTemporaryFile's native handle alive. Its own rename()
+        // releases that handle before renaming, which Windows requires.
+        if (!temporary_->rename(final)) {
+            fail("Cannot commit verified package to cache: " + temporary_->errorString());
             return;
         }
+        temporary_->setAutoRemove(false);
         temporary_.reset();
         readyPath_ = final;
         phase_ = "ready";

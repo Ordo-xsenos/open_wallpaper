@@ -38,15 +38,21 @@ Push-Location $root
 try {
     & cmake --build --preset win-manager-release
     if ($LASTEXITCODE -ne 0) { throw 'Release compilation failed.' }
+    $catalogLog = Join-Path $build 'apps/manager/catalog-results.txt'
+    if (Test-Path -LiteralPath $catalogLog) { Remove-Item -LiteralPath $catalogLog }
     & ctest --preset win-manager-release --output-on-failure --no-tests=error
     if ($LASTEXITCODE -ne 0) {
+        # Keep Qt assertions visible even when Windows does not capture stdout.
+        if (Test-Path -LiteralPath $catalogLog) {
+            Get-Content -LiteralPath $catalogLog | ForEach-Object { Write-Host $_ }
+        }
         $report = Join-Path $root 'out/reports'
         New-Item -ItemType Directory -Force -Path $report | Out-Null
         $testExe = Join-Path $build 'apps/manager/aetherwall_catalog_tests.exe'
         if ((Get-Command dumpbin -ErrorAction SilentlyContinue) -and (Test-Path -LiteralPath $testExe)) {
             & dumpbin /DEPENDENTS $testExe | Out-File (Join-Path $report 'release-dependencies.txt') -Encoding utf8
         }
-        throw 'Release CTest failed. Inspect CTest logs and out/reports/release-dependencies.txt.'
+        throw 'Release CTest failed. Inspect catalog-results.txt, CTest logs and out/reports/release-dependencies.txt.'
     }
     & (Join-Path $PSScriptRoot 'Deploy-Manager.ps1') -Preset win-msvc-release -QtRoot $QtRoot -StageDirectory $stage
     Set-Content -LiteralPath (Join-Path $stage 'qt.conf') -Encoding ascii -Value "[Paths]`nPrefix=.`nPlugins=.`nQmlImports=qml"

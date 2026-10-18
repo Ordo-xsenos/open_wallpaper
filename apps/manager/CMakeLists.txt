@@ -43,7 +43,8 @@ if(BUILD_TESTING AND NOT WIN32)
     target_compile_definitions(aetherwall_catalog_tests PRIVATE AETHERWALL_BUNDLED_DIR="${CMAKE_SOURCE_DIR}/scenes/bundled")
     target_link_libraries(aetherwall_catalog_tests PRIVATE aetherwall_control Qt6::Core Qt6::Gui Qt6::Network Qt6::Concurrent Qt6::Test)
     qt_add_resources(aetherwall_catalog_tests "catalog_mock_validation" PREFIX "/catalog" BASE "${CMAKE_SOURCE_DIR}/server/mock" FILES ${catalog_mock_files})
-    add_test(NAME Catalog.DownloadAndValidation COMMAND aetherwall_catalog_tests)
+    add_test(NAME Catalog.DownloadAndValidation COMMAND aetherwall_catalog_tests
+        -o -,txt -o "${CMAKE_CURRENT_BINARY_DIR}/catalog-results.txt,txt")
     add_executable(AetherWall.ControlHarness ../../tests/manager/Harness.cpp)
     target_include_directories(AetherWall.ControlHarness PRIVATE "${CMAKE_SOURCE_DIR}/tests/manager")
     target_compile_definitions(AetherWall.ControlHarness PRIVATE AETHERWALL_BUNDLED_DIR="${CMAKE_SOURCE_DIR}/scenes/bundled")
@@ -61,7 +62,8 @@ if(BUILD_TESTING AND WIN32)
     target_link_libraries(aetherwall_catalog_tests PRIVATE aetherwall_control Qt6::Core Qt6::Gui Qt6::Network Qt6::Concurrent Qt6::Test)
     file(GLOB_RECURSE windows_catalog_files CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/server/mock/*")
     qt_add_resources(aetherwall_catalog_tests "catalog_mock_windows" PREFIX "/catalog" BASE "${CMAKE_SOURCE_DIR}/server/mock" FILES ${windows_catalog_files})
-    add_test(NAME Catalog.DownloadAndValidation COMMAND aetherwall_catalog_tests)
+    add_test(NAME Catalog.DownloadAndValidation COMMAND aetherwall_catalog_tests
+        -o -,txt -o "${CMAKE_CURRENT_BINARY_DIR}/catalog-results.txt,txt")
     # The test runs before windeployqt. Resolve DLLs from the exact linked Qt kit
     # for both local CTest and CI without relying on the caller's PATH.
     set_tests_properties(Catalog.DownloadAndValidation PROPERTIES
