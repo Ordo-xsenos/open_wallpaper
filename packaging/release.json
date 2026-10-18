@@ -1,0 +1,8 @@
+{
+  "version": "0.5.0-preview.1",
+  "numericVersion": "0.5.0.0",
+  "qtVersion": "6.8.3",
+  "minimumWindowsBuild": 26100,
+  "architecture": "x64",
+  "acceptance": "NOT TESTED: Windows hardware and installer acceptance pending"
+}

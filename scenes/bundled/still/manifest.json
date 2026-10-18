@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "be8e750d-1600-5520-8cdc-bef5c9b66314",
+  "title": "Still mountains",
+  "author": "AetherWall contributors",
+  "license": "CC0-1.0",
+  "tags": [
+    "still"
+  ],
+  "preview": "assets/preview.png",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fit": "cover"
+  },
+  "fpsHint": 30,
+  "layers": [
+    {
+      "id": "background",
+      "type": "image",
+      "source": "assets/still.png"
+    }
+  ]
+}

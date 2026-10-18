@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "id": "1674def8-6798-59ea-adab-3b03206000ce",
+  "title": "Mountain parallax",
+  "author": "AetherWall contributors",
+  "license": "CC0-1.0",
+  "tags": [
+    "mountains"
+  ],
+  "preview": "assets/preview.png",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fit": "cover"
+  },
+  "fpsHint": 30,
+  "layers": [
+    {
+      "id": "sky",
+      "type": "image",
+      "source": "assets/sky.png"
+    },
+    {
+      "id": "back",
+      "type": "image",
+      "source": "assets/back.png",
+      "zIndex": 1,
+      "transform": {
+        "scale": [
+          1.1,
+          1.1
+        ]
+      },
+      "motion": {
+        "amplitude": [
+          24,
+          0
+        ],
+        "speed": 0.2
+      }
+    },
+    {
+      "id": "front",
+      "type": "image",
+      "source": "assets/front.png",
+      "zIndex": 2,
+      "transform": {
+        "scale": [
+          1.1,
+          1.1
+        ]
+      },
+      "motion": {
+        "amplitude": [
+          -40,
+          0
+        ],
+        "speed": 0.2
+      }
+    }
+  ]
+}

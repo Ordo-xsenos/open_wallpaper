@@ -1,0 +1,13 @@
+/out/
+/build/
+/vcpkg_installed/
+/CMakeUserPresets.json
+/.idea/
+/.vs/
+*.user
+*.log
+__pycache__/
+.pytest_cache/
+.venv/
+*.egg-info/
+server/.env

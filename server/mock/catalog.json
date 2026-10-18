@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "demo": true,
+  "items": [
+    {
+      "id": "9ee6fb35-5270-522f-97aa-db1cb95549c6",
+      "title": "Floating gradient",
+      "description": "Original bundled example: Floating gradient. Static reference preview; animation runs in Core.",
+      "author": "AetherWall contributors",
+      "license": "CC0-1.0",
+      "licenseProofUrl": "assets/9ee6fb35-5270-522f-97aa-db1cb95549c6/db8be359a49e18eab24ddc0ef2b831312b9b0c73dcc8c5f2f3db044876bd83d1/license.txt",
+      "tags": [
+        "gradient"
+      ],
+      "category": "abstract",
+      "version": "1.0.0",
+      "createdAt": "2026-10-18T00:00:00Z",
+      "updatedAt": "2026-10-18T00:00:00Z",
+      "previewUrl": "assets/9ee6fb35-5270-522f-97aa-db1cb95549c6/db8be359a49e18eab24ddc0ef2b831312b9b0c73dcc8c5f2f3db044876bd83d1/preview.png",
+      "previewSha256": "c29b43f689d585b9263c04d2f9717a8d4d434b72b2fd8d08306ce31ab1c61b74",
+      "previewSize": 92529,
+      "packageUrl": "assets/9ee6fb35-5270-522f-97aa-db1cb95549c6/db8be359a49e18eab24ddc0ef2b831312b9b0c73dcc8c5f2f3db044876bd83d1/package.awscene",
+      "sha256": "db8be359a49e18eab24ddc0ef2b831312b9b0c73dcc8c5f2f3db044876bd83d1",
+      "packageSize": 84718,
+      "supportedSchemaVersions": [
+        1
+      ],
+      "rating": null,
+      "downloadCount": null
+    },
+    {
+      "id": "72b3f428-7ecd-559c-9a84-28e33cbdecfe",
+      "title": "Quiet snow",
+      "description": "Original bundled example: Quiet snow. Static reference preview; animation runs in Core.",
+      "author": "AetherWall contributors",
+      "license": "CC0-1.0",
+      "licenseProofUrl": "assets/72b3f428-7ecd-559c-9a84-28e33cbdecfe/8d1ab937e0300aa7cca7b46c7841f94643766891e68c1956d549ab8f2551bcbc/license.txt",
+      "tags": [
+        "minimal_particles"
+      ],
+      "category": "minimal",
+      "version": "1.0.0",
+      "createdAt": "2026-10-18T00:00:00Z",
+      "updatedAt": "2026-10-18T00:00:00Z",
+      "previewUrl": "assets/72b3f428-7ecd-559c-9a84-28e33cbdecfe/8d1ab937e0300aa7cca7b46c7841f94643766891e68c1956d549ab8f2551bcbc/preview.png",
+      "previewSha256": "eb4b93784462ef953654a80b26940160b7920d0fb6ccb10332f91172e74bd267",
+      "previewSize": 94115,
+      "packageUrl": "assets/72b3f428-7ecd-559c-9a84-28e33cbdecfe/8d1ab937e0300aa7cca7b46c7841f94643766891e68c1956d549ab8f2551bcbc/package.awscene",
+      "sha256": "8d1ab937e0300aa7cca7b46c7841f94643766891e68c1956d549ab8f2551bcbc",
+      "packageSize": 86507,
+      "supportedSchemaVersions": [
+        1
+      ],
+      "rating": null,
+      "downloadCount": null
+    },
+    {
+      "id": "1674def8-6798-59ea-adab-3b03206000ce",
+      "title": "Mountain parallax",
+      "description": "Original bundled example: Mountain parallax. Static reference preview; animation runs in Core.",
+      "author": "AetherWall contributors",
+      "license": "CC0-1.0",
+      "licenseProofUrl": "assets/1674def8-6798-59ea-adab-3b03206000ce/d24a03b8adbd39431724f1f2b0222803c2cc39085a4118ccb0aeea4f9572c18d/license.txt",
+      "tags": [
+        "mountains"
+      ],
+      "category": "nature",
+      "version": "1.0.0",
+      "createdAt": "2026-10-18T00:00:00Z",
+      "updatedAt": "2026-10-18T00:00:00Z",
+      "previewUrl": "assets/1674def8-6798-59ea-adab-3b03206000ce/d24a03b8adbd39431724f1f2b0222803c2cc39085a4118ccb0aeea4f9572c18d/preview.png",
+      "previewSha256": "dd20c3a95e6b22de72a649d7f81b064cfa2df88bcdc06e94996e3b8745dd1ab3",
+      "previewSize": 2465,
+      "packageUrl": "assets/1674def8-6798-59ea-adab-3b03206000ce/d24a03b8adbd39431724f1f2b0222803c2cc39085a4118ccb0aeea4f9572c18d/package.awscene",
+      "sha256": "d24a03b8adbd39431724f1f2b0222803c2cc39085a4118ccb0aeea4f9572c18d",
+      "packageSize": 4690,
+      "supportedSchemaVersions": [
+        1
+      ],
+      "rating": null,
+      "downloadCount": null
+    },
+    {
+      "id": "dd640630-dc91-59c6-addc-78eb649dcc21",
+      "title": "Mountain rain",
+      "description": "Original bundled example: Mountain rain. Static reference preview; animation runs in Core.",
+      "author": "AetherWall contributors",
+      "license": "CC0-1.0",
+      "licenseProofUrl": "assets/dd640630-dc91-59c6-addc-78eb649dcc21/52505c969608077b8a015a7fa7f0bef40852446d18bcd604a4ac55ac7bc138d9/license.txt",
+      "tags": [
+        "rain"
+      ],
+      "category": "nature",
+      "version": "1.0.0",
+      "createdAt": "2026-10-18T00:00:00Z",
+      "updatedAt": "2026-10-18T00:00:00Z",
+      "previewUrl": "assets/dd640630-dc91-59c6-addc-78eb649dcc21/52505c969608077b8a015a7fa7f0bef40852446d18bcd604a4ac55ac7bc138d9/preview.png",
+      "previewSha256": "08918b6d9a511dcf20bc2a06d849d73ddbd0e479117303ff0ca32da8082da59c",
+      "previewSize": 38447,
+      "packageUrl": "assets/dd640630-dc91-59c6-addc-78eb649dcc21/52505c969608077b8a015a7fa7f0bef40852446d18bcd604a4ac55ac7bc138d9/package.awscene",
+      "sha256": "52505c969608077b8a015a7fa7f0bef40852446d18bcd604a4ac55ac7bc138d9",
+      "packageSize": 40205,
+      "supportedSchemaVersions": [
+        1
+      ],
+      "rating": null,
+      "downloadCount": null
+    },
+    {
+      "id": "22c39087-e48a-5d09-ad77-37fc19bb68d8",
+      "title": "Starry night",
+      "description": "Original bundled example: Starry night. Static reference preview; animation runs in Core.",
+      "author": "AetherWall contributors",
+      "license": "CC0-1.0",
+      "licenseProofUrl": "assets/22c39087-e48a-5d09-ad77-37fc19bb68d8/f4d96ff65fd2c4441bd416489a06748fc64266fba5ddccc86388e0e8b306d8d6/license.txt",
+      "tags": [
+        "stars"
+      ],
+      "category": "space",
+      "version": "1.0.0",
+      "createdAt": "2026-10-18T00:00:00Z",
+      "updatedAt": "2026-10-18T00:00:00Z",
+      "previewUrl": "assets/22c39087-e48a-5d09-ad77-37fc19bb68d8/f4d96ff65fd2c4441bd416489a06748fc64266fba5ddccc86388e0e8b306d8d6/preview.png",
+      "previewSha256": "7215fb4c3107a30bab42fec0360e33b14c5e68a2d135b1f0064d8867f3caee77",
+      "previewSize": 97061,
+      "packageUrl": "assets/22c39087-e48a-5d09-ad77-37fc19bb68d8/f4d96ff65fd2c4441bd416489a06748fc64266fba5ddccc86388e0e8b306d8d6/package.awscene",
+      "sha256": "f4d96ff65fd2c4441bd416489a06748fc64266fba5ddccc86388e0e8b306d8d6",
+      "packageSize": 89712,
+      "supportedSchemaVersions": [
+        1
+      ],
+      "rating": null,
+      "downloadCount": null
+    },
+    {
+      "id": "be8e750d-1600-5520-8cdc-bef5c9b66314",
+      "title": "Still mountains",
+      "description": "Original bundled example: Still mountains. Static reference preview; animation runs in Core.",
+      "author": "AetherWall contributors",
+      "license": "CC0-1.0",
+      "licenseProofUrl": "assets/be8e750d-1600-5520-8cdc-bef5c9b66314/330bd252a3a17edc71ff9c3e3e157adc1f06158117501be50db53491bfbf0c36/license.txt",
+      "tags": [
+        "still"
+      ],
+      "category": "nature",
+      "version": "1.0.0",
+      "createdAt": "2026-10-18T00:00:00Z",
+      "updatedAt": "2026-10-18T00:00:00Z",
+      "previewUrl": "assets/be8e750d-1600-5520-8cdc-bef5c9b66314/330bd252a3a17edc71ff9c3e3e157adc1f06158117501be50db53491bfbf0c36/preview.png",
+      "previewSha256": "d2be102784e6595337b9c0860a51bb6a8f3b8cb149dc0382a3fb0161fc2e24b3",
+      "previewSize": 2488,
+      "packageUrl": "assets/be8e750d-1600-5520-8cdc-bef5c9b66314/330bd252a3a17edc71ff9c3e3e157adc1f06158117501be50db53491bfbf0c36/package.awscene",
+      "sha256": "330bd252a3a17edc71ff9c3e3e157adc1f06158117501be50db53491bfbf0c36",
+      "packageSize": 3717,
+      "supportedSchemaVersions": [
+        1
+      ],
+      "rating": null,
+      "downloadCount": null
+    }
+  ]
+}

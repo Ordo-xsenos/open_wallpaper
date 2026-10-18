@@ -1,0 +1,6 @@
+Still mountains
+Author: AetherWall contributors
+License: CC0-1.0
+Original AetherWall bundled artwork, source scenes/bundled/still.
+Procedural artwork and manifests are supplied with the AetherWall source.
+See scenes/README.md and tools/Generate-BundledScenes.py.

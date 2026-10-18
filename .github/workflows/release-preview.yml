@@ -1,0 +1,90 @@
+name: M5 internal preview
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build portable policies and packaging tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build nlohmann-json3-dev libarchive-dev libwebp-dev zlib1g-dev libgtest-dev libsqlite3-dev libssl-dev
+          cmake --preset portable-tests
+          cmake --build --preset portable-tests
+          ctest --preset portable-tests --output-on-failure --no-tests=error
+          python -m pip install './server[test]'
+          python -m pytest tests/release server/tests -q
+  windows-preview:
+    runs-on: windows-2022
+    needs: policy
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned Qt kit
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          python -m pip install aqtinstall==3.3.0
+          if ($LASTEXITCODE -ne 0) { throw 'aqt installation failed.' }
+          python -m aqt install-qt windows desktop 6.8.3 win64_msvc2022_64 -O out/Qt
+          if ($LASTEXITCODE -ne 0) { throw 'Qt installation failed.' }
+      - name: Collect exact Qt source notices and companion sources
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($module in @('qtbase','qtdeclarative','qtsvg','qtshadertools','qttranslations')) {
+            git clone --depth 1 --branch v6.8.3 "https://code.qt.io/qt/$module.git" "out/qt-sources/$module"
+            if ($LASTEXITCODE -ne 0) { throw "Qt source checkout failed: $module" }
+          }
+          python tools/Collect-QtNotices.py --sources out/qt-sources --output out/qt-notices
+          if ($LASTEXITCODE -ne 0) { throw 'Notice collection failed.' }
+          # Companion source materials; no public release is created by this workflow.
+          Get-ChildItem out/qt-sources -Directory | ForEach-Object {
+            git -C $_.FullName archive --format=zip --output="$env:GITHUB_WORKSPACE/out/$($_.Name)-6.8.3-source.zip" HEAD
+            if ($LASTEXITCODE -ne 0) { throw 'Qt source archive failed.' }
+          }
+      - name: Build, test, stage and compile installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installation) { throw 'MSVC x64 installation missing.' }
+          Import-Module "$installation/Common7/Tools/Microsoft.VisualStudio.DevShell.dll"
+          Enter-VsDevShell -VsInstallPath $installation -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'
+          ./tools/Bootstrap-Windows.ps1
+          $qt = Join-Path $env:GITHUB_WORKSPACE 'out/Qt/6.8.3/msvc2022_64'
+          cmake --preset win-manager-release "-DCMAKE_PREFIX_PATH=$qt"
+          if ($LASTEXITCODE -ne 0) { throw 'Manager Release configure failed.' }
+          ./tools/Build-Release.ps1 -QtRoot $qt -QtNoticesRoot "$env:GITHUB_WORKSPACE/out/qt-notices" -Revision $env:GITHUB_SHA
+          python tools/Package-Source.py
+          if ($LASTEXITCODE -ne 0) { throw 'Source packaging failed.' }
+      - name: Retain internal artifacts and build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m5-internal-preview-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            out/release/
+            out/share/AetherWall-M5.zip*
+            out/*-6.8.3-source.zip
+            out/build/win-msvc-release/Testing/Temporary/
+            out/build/win-msvc-release/CMakeFiles/CMakeConfigureLog.yaml

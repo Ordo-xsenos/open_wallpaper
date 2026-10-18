@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "22c39087-e48a-5d09-ad77-37fc19bb68d8",
+  "title": "Starry night",
+  "author": "AetherWall contributors",
+  "license": "CC0-1.0",
+  "tags": [
+    "stars"
+  ],
+  "preview": "assets/preview.png",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fit": "cover"
+  },
+  "fpsHint": 30,
+  "layers": [
+    {
+      "id": "background",
+      "type": "gradient",
+      "speed": 0,
+      "zIndex": 0
+    },
+    {
+      "id": "particles",
+      "type": "particles",
+      "preset": "stars",
+      "zIndex": 10,
+      "parameters": {
+        "count": 180,
+        "speed": 0.25,
+        "size": 4
+      }
+    }
+  ]
+}

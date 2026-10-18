@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "dd640630-dc91-59c6-addc-78eb649dcc21",
+  "title": "Mountain rain",
+  "author": "AetherWall contributors",
+  "license": "CC0-1.0",
+  "tags": [
+    "rain"
+  ],
+  "preview": "assets/preview.png",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fit": "cover"
+  },
+  "fpsHint": 30,
+  "layers": [
+    {
+      "id": "background",
+      "type": "image",
+      "source": "assets/still.png"
+    },
+    {
+      "id": "particles",
+      "type": "particles",
+      "preset": "rain",
+      "zIndex": 10,
+      "parameters": {
+        "count": 500,
+        "speed": 0.5,
+        "size": 3
+      }
+    }
+  ]
+}

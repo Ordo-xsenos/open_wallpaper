@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aetherwall-catalog"
+version = "0.4.0"
+requires-python = ">=3.11"
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1"]
+
+[project.optional-dependencies]
+production = ["psycopg[binary]>=3.2,<4", "boto3>=1.35,<2"]
+test = ["pytest>=8,<10", "httpx>=0.27,<1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools]
+packages = ["server", "server.app"]
+package-dir = {server = "."}
+
+[tool.setuptools.package-data]
+server = ["migrations/*.sql", "mock/catalog.json", "mock/assets/*/*/*"]

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "9ee6fb35-5270-522f-97aa-db1cb95549c6",
+  "title": "Floating gradient",
+  "author": "AetherWall contributors",
+  "license": "CC0-1.0",
+  "tags": [
+    "gradient"
+  ],
+  "preview": "assets/preview.png",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fit": "cover"
+  },
+  "fpsHint": 30,
+  "layers": [
+    {
+      "id": "background",
+      "type": "gradient",
+      "speed": 0.65,
+      "zIndex": 0
+    }
+  ]
+}

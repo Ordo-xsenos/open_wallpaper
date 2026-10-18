@@ -1,0 +1,151 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "win-msvc-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "VCPKG_MANIFEST_FEATURES": "tests",
+        "BUILD_TESTING": "ON",
+        "AETHERWALL_BUILD_CORE": "ON",
+        "AETHERWALL_BUILD_MANAGER": "OFF"
+      }
+    },
+    {
+      "name": "win-msvc-debug",
+      "inherits": "win-msvc-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "win-msvc-release",
+      "inherits": "win-msvc-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "portable-tests",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "ON",
+        "AETHERWALL_BUILD_CORE": "OFF"
+      }
+    },
+    {
+      "name": "manager-dev",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "ON",
+        "AETHERWALL_BUILD_CORE": "OFF",
+        "AETHERWALL_BUILD_MANAGER": "ON"
+      }
+    },
+    {
+      "name": "win-manager-debug",
+      "inherits": "win-msvc-debug",
+      "binaryDir": "${sourceDir}/out/build/win-msvc-debug",
+      "cacheVariables": {
+        "AETHERWALL_BUILD_MANAGER": "ON"
+      }
+    },
+    {
+      "name": "win-manager-release",
+      "inherits": "win-msvc-release",
+      "binaryDir": "${sourceDir}/out/build/win-msvc-release",
+      "cacheVariables": {
+        "AETHERWALL_BUILD_MANAGER": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "win-msvc-debug",
+      "configurePreset": "win-msvc-debug"
+    },
+    {
+      "name": "win-msvc-release",
+      "configurePreset": "win-msvc-release"
+    },
+    {
+      "name": "portable-tests",
+      "configurePreset": "portable-tests"
+    },
+    {
+      "name": "manager-dev",
+      "configurePreset": "manager-dev"
+    },
+    {
+      "name": "win-manager-debug",
+      "configurePreset": "win-manager-debug"
+    },
+    {
+      "name": "win-manager-release",
+      "configurePreset": "win-manager-release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "win-msvc-debug",
+      "configurePreset": "win-msvc-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "win-msvc-release",
+      "configurePreset": "win-msvc-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "portable-tests",
+      "configurePreset": "portable-tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "manager-dev",
+      "configurePreset": "manager-dev",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "win-manager-debug",
+      "configurePreset": "win-manager-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "win-manager-release",
+      "configurePreset": "win-manager-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

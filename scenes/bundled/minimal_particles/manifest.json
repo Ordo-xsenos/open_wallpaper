@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "72b3f428-7ecd-559c-9a84-28e33cbdecfe",
+  "title": "Quiet snow",
+  "author": "AetherWall contributors",
+  "license": "CC0-1.0",
+  "tags": [
+    "minimal_particles"
+  ],
+  "preview": "assets/preview.png",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "fit": "cover"
+  },
+  "fpsHint": 30,
+  "layers": [
+    {
+      "id": "background",
+      "type": "gradient",
+      "speed": 0,
+      "zIndex": 0
+    },
+    {
+      "id": "particles",
+      "type": "particles",
+      "preset": "snow",
+      "zIndex": 10,
+      "parameters": {
+        "count": 32,
+        "speed": 0.15,
+        "size": 6
+      }
+    }
+  ]
+}
