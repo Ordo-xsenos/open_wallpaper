@@ -9,7 +9,8 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--output", type=Path, default=root / "out/share/AetherWall-M5.zip")
 args = parser.parse_args()
 files = [root / name for name in (
-    "CMakeLists.txt", "CMakePresets.json", "vcpkg.json", "README.md", "AGENTS.md",
+    "CMakeLists.txt", "CMakePresets.json", "vcpkg.json", "README.md", "README.ru.md", "README.uz.md", "AGENTS.md",
+    "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md",
     "WINDOWS11_WALLPAPER_ENGINE_SPEC.md", "LICENSE", "THIRD_PARTY_NOTICES.md",
     "PRODUCT.md", "DESIGN.md", ".clang-format", ".gitignore", ".dockerignore",
     ".impeccable/config.json", ".impeccable/design.json",

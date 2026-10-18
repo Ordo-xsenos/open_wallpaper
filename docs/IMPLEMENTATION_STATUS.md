@@ -28,7 +28,7 @@ recorded as a fabricated full matrix PASS.
   deployment, x64 PE checks, required dependency/notices checks and per-file hashes.
 - Exact-tag Qt source notice collection, companion source archives, portable
   binary ZIP and installer SHA-256 sidecars; automatic GitHub pre-releases from main.
-- Internal Windows Release workflow and portable policy/server/packaging CI.
+- Unified CI with Linux checks, Core Debug and Manager Release packaging.
   Packaging policy tests use synthetic PE fixtures; they do not run executables.
 - Linux Manager builds and 70 CTest entries pass; 32 release policy/notice/publication tests and 12
   server tests pass. The user subsequently reported successful Windows CI jobs. Installed runtime,
@@ -44,9 +44,28 @@ Windows matrix and durable source/license materials before public distribution.
 - PR/non-main builds cannot publish; only the publish job has repository write
   permissions. Missing/corrupt assets fail before draft creation; failed uploads
   never promote a draft. No stable-release or hardware acceptance is implied.
-- README now introduces the product, downloads, first run and limitations in Russian.
+- README introduces the product, downloads, first run and limitations in English,
+  with linked Russian and Uzbek Latin versions.
   Detailed diagnostic/build commands moved to DEVELOPMENT.md.
 - Publication orchestration is tested with a fake gh process, not a real upload.
+
+## CI/runtime and community follow-up
+
+- Merged the overlapping Windows workflows into AetherWall CI; main pushes, PRs
+  targeting main and manual runs use one workflow with no repeated Release build.
+  Publication requires Linux, Debug and Release to succeed and remains main-only.
+- The reported Windows `0xC0000135` catalog test startup failure is addressed by
+  CTest prepending the linked Qt DLL directory to PATH. No failed test is skipped.
+- Staged runtime checks launch Core --help, SceneCheck examples and software-rendered
+  Manager/QML with a clean PATH before packaging. Timeout/exit failures abort the
+  release; logs, startup capture and CTest dependency diagnostics are retained.
+- CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, bug/feature issue forms and a PR template
+  are added in English; all README variants link to them and are in source packages.
+- Linux Manager build, 70 CTest entries and 44 Python tests pass after the change.
+  YAML/publication gates, local documentation links and issue schemas validate.
+- Windows execution of these new runtime checks remains NOT TESTED. Description
+  and private reporting API writes failed from this environment; follow
+  COMMUNITY_SETUP.md and verify the repository's Community Standards after merge.
 
 ## M4 catalog slice
 

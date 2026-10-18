@@ -1,113 +1,123 @@
+**English** · [Русский](README.ru.md) · [O‘zbek](README.uz.md)
+
 # AetherWall
 
-**Живые обои для Windows 11: собственные GPU-сцены, несколько мониторов и управление нагрузкой.**
+**Live wallpapers for Windows 11, with GPU scenes, multiple monitors, and control over animation.**
 
-AetherWall рисует анимированные сцены на Direct3D 11 и HLSL и размещает их за
-значками рабочего стола. Выбирайте обои в приложении, назначайте разные сцены
-мониторам и задавайте, когда анимацию нужно приостановить. После закрытия окна
-управления обои продолжают работать — движок остаётся в системном трее.
+AetherWall renders scenes with Direct3D 11 and HLSL behind your desktop icons.
+Choose a wallpaper, assign different scenes to your monitors, and decide when
+animations should pause. Closing Manager leaves the wallpapers running;
+the independent Core stays in the system tray.
 
-[Скачать для Windows](https://github.com/Ordo-xsenos/open_wallpaper/releases) ·
-[Сборки CI](https://github.com/Ordo-xsenos/open_wallpaper/actions/workflows/release-preview.yml) ·
-[Сообщить о проблеме](https://github.com/Ordo-xsenos/open_wallpaper/issues)
+[![CI](https://github.com/Ordo-xsenos/open_wallpaper/actions/workflows/release-preview.yml/badge.svg)](https://github.com/Ordo-xsenos/open_wallpaper/actions/workflows/release-preview.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Windows 11 x64](https://img.shields.io/badge/Windows-11%20x64-0078D4)
+![Preview](https://img.shields.io/badge/Status-Preview-orange)
 
-![Каталог сцен AetherWall](docs/screenshots/m5-discover-linux.png)
+[Download for Windows](https://github.com/Ordo-xsenos/open_wallpaper/releases) ·
+[CI builds](https://github.com/Ordo-xsenos/open_wallpaper/actions/workflows/release-preview.yml) ·
+[Report a problem](https://github.com/Ordo-xsenos/open_wallpaper/issues/new/choose)
 
-*Настоящий скриншот интерфейса из Linux-среды разработки. Тестовое подключение
-обозначено в окне; это не демонстрация рендеринга рабочего стола Windows.*
+![AetherWall scene catalog](docs/screenshots/m5-discover-linux.png)
 
-## Что умеет
+*Actual Manager screenshot from Linux development. The window labels its test
+connection; this image does not demonstrate Windows desktop rendering.*
 
-- **Сцены на GPU.** Слои изображений, градиенты, движение и частицы: звёзды,
-  дождь и снег. Шесть оригинальных примеров включены в приложение.
-- **Несколько мониторов.** Одна сцена на всех экранах или отдельная для каждого,
-  с учётом расположения и DPI.
-- **Контроль анимации.** Лимит 15/30/60 FPS, выбор GPU и правила паузы при
-  полноэкранном приложении, работе от батареи и блокировке компьютера.
-- **Локальная библиотека.** Импорт папок сцен и пакетов `.awscene`, поиск,
-  избранное и сохранение назначений между запусками.
-- **Каталог.** Поиск, категории и загрузка с отменой и проверкой SHA-256.
-  Встроенные примеры доступны без сервера; установленная библиотека работает офлайн.
-- **Русский и английский интерфейс.** Тёмное приложение на Qt, управление через
-  трей и необязательный автозапуск при входе в Windows.
+## Features
 
-## Скачать и установить
+- **GPU scenes.** Image layers, gradients, motion, and particles: stars, rain,
+  and snow. Six original examples ship with the app.
+- **Multiple monitors.** One scene everywhere or different scenes on each display,
+  accounting for layout and DPI.
+- **Animation controls.** 15/30/60 FPS limits, GPU selection, and pause rules for
+  fullscreen applications, battery use, and locked sessions.
+- **Local library.** Import scene folders and `.awscene` packages, search,
+  save favorites, and restore monitor assignments between sessions.
+- **Catalog.** Search, categories, cancellable downloads, and SHA-256 validation.
+  Bundled examples and installed wallpapers work offline.
+- **Russian and English UI.** Dark Qt Manager, tray controls, and optional
+  autostart when you sign in to Windows.
 
-Нужна **Windows 11 24H2 или новее (build 26100+), x64** и видеокарта с поддержкой
-Direct3D 11. Для готовой сборки не нужны Visual Studio, Qt или Python.
+## Download and install
 
-Откройте [Releases](https://github.com/Ordo-xsenos/open_wallpaper/releases), выберите
-нужную предварительную сборку и раскройте **Assets**:
+Requires **Windows 11 24H2 or later (build 26100+), x64**, and a Direct3D 11 GPU.
+Prebuilt downloads do not require Visual Studio, Qt, or Python.
 
-| Файл | Для чего |
+Open [Releases](https://github.com/Ordo-xsenos/open_wallpaper/releases), choose
+an available preview, and expand **Assets**:
+
+| Download | Purpose |
 | --- | --- |
-| `AetherWall-…-win-x64-setup.exe` | Установщик — обычный способ установки |
-| `AetherWall-…-win-x64.zip` | Приложение без установки: распакуйте ZIP целиком |
-| `SHA256SUMS.txt` и `*.sha256` | Контрольные суммы скачанных файлов |
-| `AetherWall-M5.zip` | Исходники проекта, не готовое приложение |
-| `qt…-source.zip` | Сопутствующие исходники Qt для распространения зависимостей |
+| `AetherWall-…-win-x64-setup.exe` | Installer — the usual way to install |
+| `AetherWall-…-win-x64.zip` | Run without installing; extract the entire ZIP |
+| `SHA256SUMS.txt` and `*.sha256` | Checksums for the downloads |
+| `AetherWall-M5.zip` | Project source code, not the application |
+| `qt…-source.zip` | Companion Qt source materials |
 
-Установщик работает без прав администратора и размещает приложение в
-`%LOCALAPPDATA%\Programs\AetherWall`. Автозапуск включается отдельно в настройках.
-В ZIP-версии запускайте `AetherWall.Manager.exe`; сохраняйте рядом все DLL и папки.
-Обе версии хранят библиотеку и настройки в профиле пользователя.
+The installer needs no administrator rights and uses
+`%LOCALAPPDATA%\Programs\AetherWall`. Enable autostart separately in Settings.
+For the ZIP version, run `AetherWall.Manager.exe` and keep all DLLs and folders
+beside it. Both versions store settings and the library in your user profile.
 
-## Первый запуск
+## First run
 
-1. Откройте **AetherWall** и нажмите **«Запустить движок»**.
-2. Выберите сцену в **«Библиотеке»**, укажите монитор и примените её.
-3. В настройках производительности выберите FPS и правила паузы.
+1. Open **AetherWall** and choose **Start engine**.
+2. Select a scene in **Library**, choose a monitor, and apply it.
+3. Adjust FPS and pause rules in the performance settings.
 
-Окно Manager можно закрыть: обои останутся активны. Для полного завершения
-используйте соответствующую команду приложения или меню в трее. Перед обновлением
-или удалением завершите движок полностью. Удаление приложения сохраняет библиотеку,
-настройки и исходные импортированные файлы.
+Closing Manager keeps wallpapers running. To stop everything, use the complete
+exit action in Manager or the tray menu. Exit completely before updating or
+uninstalling. Uninstalling preserves the library, settings, and imported source files.
 
-Для проверки рендеринга в обычном окне запустите `AetherWall.Manager.exe --core-window`
-и затем включите движок. Этот режим помогает отделить ошибки GPU от интеграции
-с рабочим столом.
+To test rendering in an ordinary window, launch
+`AetherWall.Manager.exe --core-window`, then start the engine. This diagnostic
+mode helps distinguish GPU problems from desktop integration problems.
 
-## Свои сцены и каталог
+## Your scenes and catalog
 
-В основе сцены — `manifest.json`, изображения и встроенные эффекты. Импортируйте
-папку или `.awscene` через библиотеку; формат и ограничения описаны в
-[руководстве по сценам](docs/SCENE_FORMAT.md). Исходники примеров находятся в
-[scenes/](scenes/README.md).
+A scene contains `manifest.json`, images, and built-in effects. Import a folder
+or `.awscene` through Library; see the [scene format](docs/SCENE_FORMAT.md)
+and [bundled examples](scenes/README.md).
 
-Публичный сервер каталога по умолчанию не задан. На странице **«Каталог → Примеры»**
-можно открыть встроенные сцены. Для собственного каталога укажите HTTPS-адрес в
-настройках; [сервер FastAPI](server/README.md) поддерживает поиск, модерацию и
-локальное либо S3-совместимое хранилище. Контент публикуется с подтверждёнными
-правами автора.
+No public catalog server is configured by default. Open **Discover → Examples**
+for bundled scenes. To use your own catalog, enter its HTTPS address in Settings.
+The separate [FastAPI server](server/README.md) supports search, moderation, and
+local or S3-compatible storage. Published content requires author rights.
 
-## Статус проекта
+## Project status
 
-AetherWall находится в стадии **preview**. Успешная CI-сборка проверяет компиляцию
-и автоматические тесты; полная матрица Windows, разных GPU и конфигураций мониторов
-ещё требует проверки. Интеграция с оболочкой Windows экспериментальная.
-Показатели производительности пока не заявлены. Текущие сборки не подписаны.
+AetherWall is a **preview**. CI checks compilation and automated tests; the full
+Windows, GPU, and monitor compatibility matrix still needs verification. Shell
+integration is experimental, performance figures have not been established, and
+current builds are unsigned.
 
-После успешной сборки `main` CI автоматически создаёт отдельный **Pre-release**
-в Releases с установщиком, ZIP, исходниками и контрольными суммами. Ошибочные
-сборки и pull request не публикуются. Каждая публикация привязана к своему коммиту
-и не заменяет файлы предыдущей.
+Successful `main` builds create individual GitHub **Pre-releases** with the installer,
+ZIP, sources, and checksums. Failed builds and pull requests do not publish.
+Each release points to its own commit and preserves previous downloads.
 
-При проблеме приложите версию сборки, Windows, GPU/драйвер, описание действий и
-логи из `%LOCALAPPDATA%\AetherWall\logs`. Проверки и известные ограничения:
-[матрица приёмки](docs/M5_TEST_PLAN.md), [совместимость рабочего стола](docs/DESKTOP_INTEGRATION.md).
+For problems, include your build version, Windows version, GPU/driver, reproduction
+steps, and logs from `%LOCALAPPDATA%\AetherWall\logs` with personal information removed.
+See the [acceptance matrix](docs/M5_TEST_PLAN.md) and
+[desktop compatibility notes](docs/DESKTOP_INTEGRATION.md).
 
-## Разработка
+## Development
 
-C++20, Direct3D 11/HLSL, Qt Quick и SQLite. Движок Core отвечает за рендеринг,
-состояние и трей; Manager общается с ним через Named Pipe и выполняет сетевые
-запросы. Сервер каталога на Python запускается отдельно.
+C++20, Direct3D 11/HLSL, Qt Quick, and SQLite. Core owns rendering, persistent
+state, and the tray. Manager uses Named Pipe IPC and handles network requests.
+The Python catalog server runs separately.
 
-- [Сборка из исходников и диагностика](docs/DEVELOPMENT.md)
-- [Сборка установщика и публикация](docs/RELEASE.md)
-- [Формат сцен](docs/SCENE_FORMAT.md) и [протокол IPC](docs/IPC.md)
-- [Статус реализации](docs/IMPLEMENTATION_STATUS.md) и [спецификация](WINDOWS11_WALLPAPER_ENGINE_SPEC.md)
+- [Build and diagnostic commands](docs/DEVELOPMENT.md)
+- [Installer builds and releases](docs/RELEASE.md)
+- [Scene format](docs/SCENE_FORMAT.md) and [IPC protocol](docs/IPC.md)
+- [Implementation status](docs/IMPLEMENTATION_STATUS.md) and [specification](WINDOWS11_WALLPAPER_ENGINE_SPEC.md)
 
-## Лицензия
+## Contributing
 
-Код проекта — [MIT](LICENSE). Оригинальные сцены — CC0-1.0.
-У зависимостей собственные условия: [сторонние компоненты и лицензии](THIRD_PARTY_NOTICES.md).
+Read [CONTRIBUTING](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
+Use the [issue forms](https://github.com/Ordo-xsenos/open_wallpaper/issues/new/choose)
+for bugs and ideas. Report vulnerabilities privately following [SECURITY](SECURITY.md).
+
+## License
+
+Project code is [MIT](LICENSE). Original bundled scenes use CC0-1.0.
+Dependencies have their own terms: [third-party notices](THIRD_PARTY_NOTICES.md).

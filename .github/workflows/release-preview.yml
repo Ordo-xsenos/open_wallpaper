@@ -1,16 +1,18 @@
-name: Windows preview release
+name: AetherWall CI
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
 
 jobs:
   policy:
+    name: Linux policies and Python tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +30,46 @@ jobs:
           ctest --preset portable-tests --output-on-failure --no-tests=error
           python -m pip install './server[test]'
           python -m pytest tests/release server/tests -q
+  windows-debug:
+    name: Windows Core Debug
+    needs: policy
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure, build, and test policies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
+          $installation = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installation) { throw 'MSVC installation not found.' }
+          Import-Module "$installation/Common7/Tools/Microsoft.VisualStudio.DevShell.dll"
+          Enter-VsDevShell -VsInstallPath $installation -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'
+          Set-Location $env:GITHUB_WORKSPACE
+          ./tools/Bootstrap-Windows.ps1
+          cmake --preset win-msvc-debug
+          if ($LASTEXITCODE -ne 0) { throw 'Configure failed.' }
+          cmake --build --preset win-msvc-debug
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+          ctest --preset win-msvc-debug --output-on-failure --no-tests=error
+          if ($LASTEXITCODE -ne 0) { throw 'CTest failed.' }
+      - name: Upload build and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-debug-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            out/build/win-msvc-debug/AetherWall.Core.exe
+            out/build/win-msvc-debug/AetherWall.SceneCheck.exe
+            out/build/win-msvc-debug/licenses/
+            out/build/win-msvc-debug/Testing/Temporary/
+            out/build/win-msvc-debug/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: warn
+
   windows-preview:
+    name: Windows Manager Release
     outputs:
       release-artifact-id: ${{ steps.release-files.outputs.artifact-id }}
     runs-on: windows-2022
@@ -90,23 +131,25 @@ jobs:
             out/release/
             out/share/AetherWall-M5.zip*
             out/*-6.8.3-source.zip
-      - name: Retain internal artifacts and build evidence
+      - name: Retain build diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: m5-internal-preview-${{ github.sha }}
+          name: build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 14
           if-no-files-found: warn
           path: |
             out/release/
             out/share/AetherWall-M5.zip*
             out/*-6.8.3-source.zip
+            out/reports/release-smoke/
+            out/reports/release-dependencies.txt
             out/build/win-msvc-release/Testing/Temporary/
             out/build/win-msvc-release/CMakeFiles/CMakeConfigureLog.yaml
 
   publish:
     name: Publish GitHub pre-release
-    needs: [policy, windows-preview]
+    needs: [policy, windows-debug, windows-preview]
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:

@@ -62,4 +62,8 @@ if(BUILD_TESTING AND WIN32)
     file(GLOB_RECURSE windows_catalog_files CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/server/mock/*")
     qt_add_resources(aetherwall_catalog_tests "catalog_mock_windows" PREFIX "/catalog" BASE "${CMAKE_SOURCE_DIR}/server/mock" FILES ${windows_catalog_files})
     add_test(NAME Catalog.DownloadAndValidation COMMAND aetherwall_catalog_tests)
+    # The test runs before windeployqt. Resolve DLLs from the exact linked Qt kit
+    # for both local CTest and CI without relying on the caller's PATH.
+    set_tests_properties(Catalog.DownloadAndValidation PROPERTIES
+        ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:$<TARGET_FILE_DIR:Qt6::Core>")
 endif()

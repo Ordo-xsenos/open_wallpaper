@@ -1,0 +1,56 @@
+name: Bug report
+description: Report a reproducible application, build, or installation problem.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "For security vulnerabilities, use Security → Advisories. Remove personal data and secrets from logs. English is preferred; Russian and Uzbek reports are welcome."
+  - type: input
+    id: version
+    attributes:
+      label: Build or commit
+      description: Release tag, full commit SHA, or source archive identity.
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: OS and version
+      description: Windows edition/build (winver), or the OS used for a build failure.
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: GPU, driver, and monitors
+      description: GPU model/driver version, monitor layout, refresh rates and DPI. Use N/A for a build-only issue.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does it fail?
+      options:
+        - Desktop mode
+        - Diagnostic window mode
+        - Manager or catalog
+        - Installer or uninstaller
+        - Build or CI
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, scene name and relevant settings.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs and screenshots
+      description: Attach sanitized logs from %LOCALAPPDATA%\AetherWall\logs or the CI run link. Do not attach credentials or personal data.

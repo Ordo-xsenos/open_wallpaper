@@ -1,8 +1,8 @@
-# Сборка и диагностика AetherWall
+# Building and diagnosing AetherWall
 
-Подробные команды для разработчиков. Установка готовой сборки описана в [README](../README.md).
+Developer commands and diagnostic reference. For prebuilt downloads, see the [README](../README.md).
 
-## Manager: сборка и запуск
+## Manager: build and run
 
 Core builds still do not need Qt. To include Manager, install a **shared Qt 6.5+
 MSVC x64 kit**, then use x64 Developer PowerShell and your actual Qt root:

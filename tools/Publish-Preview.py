@@ -83,16 +83,16 @@ def publish(directory, environment=None):
     version = METADATA["version"]
     notes = f"""# AetherWall {version} — Windows x64 preview
 
-Автоматическая предварительная сборка. Для установки скачайте
-`AetherWall-{version}-win-x64-setup.exe` из **Assets** ниже.
-Для запуска без установки распакуйте `AetherWall-{version}-win-x64.zip` целиком
-и откройте `AetherWall.Manager.exe`. Windows 11 24H2+ x64, Direct3D 11.
+Automatic preview build. Download `AetherWall-{version}-win-x64-setup.exe`
+from **Assets** below to install. To run without installing, extract
+`AetherWall-{version}-win-x64.zip` in full and open `AetherWall.Manager.exe`.
+Requires Windows 11 24H2+ x64 and Direct3D 11.
 
-Исходники приложения: `AetherWall-M5.zip`; соответствующие исходники Qt приложены
-отдельными `qt…-source.zip`. Все файлы проверяются по `SHA256SUMS.txt`.
+Application source: `AetherWall-M5.zip`. Matching Qt source companions are attached
+as `qt…-source.zip`. Check all downloads against `SHA256SUMS.txt`.
 
-Коммит: `{revision}`.
-[Лог сборки](https://github.com/{repository}/actions/runs/{run}).
+Commit: `{revision}`.
+[Build log](https://github.com/{repository}/actions/runs/{run}).
 
 ---
 
@@ -146,7 +146,9 @@ def publish(directory, environment=None):
     url = f"https://github.com/{repository}/releases/tag/{tag}"
     if env.get("GITHUB_STEP_SUMMARY"):
         with Path(env["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as summary:
-            summary.write(f"## Windows preview\n\n[Скачать установщик и ZIP]({url})\n")
+            summary.write(
+                f"## Windows preview\n\n[Download installer and ZIP]({url})\n"
+            )
     print(url)
     return url
 

@@ -39,7 +39,15 @@ try {
     & cmake --build --preset win-manager-release
     if ($LASTEXITCODE -ne 0) { throw 'Release compilation failed.' }
     & ctest --preset win-manager-release --output-on-failure --no-tests=error
-    if ($LASTEXITCODE -ne 0) { throw 'Release CTest failed.' }
+    if ($LASTEXITCODE -ne 0) {
+        $report = Join-Path $root 'out/reports'
+        New-Item -ItemType Directory -Force -Path $report | Out-Null
+        $testExe = Join-Path $build 'apps/manager/aetherwall_catalog_tests.exe'
+        if ((Get-Command dumpbin -ErrorAction SilentlyContinue) -and (Test-Path -LiteralPath $testExe)) {
+            & dumpbin /DEPENDENTS $testExe | Out-File (Join-Path $report 'release-dependencies.txt') -Encoding utf8
+        }
+        throw 'Release CTest failed. Inspect CTest logs and out/reports/release-dependencies.txt.'
+    }
     & (Join-Path $PSScriptRoot 'Deploy-Manager.ps1') -Preset win-msvc-release -QtRoot $QtRoot -StageDirectory $stage
     Set-Content -LiteralPath (Join-Path $stage 'qt.conf') -Encoding ascii -Value "[Paths]`nPrefix=.`nPlugins=.`nQmlImports=qml"
     Copy-Item -LiteralPath $QtNoticesRoot -Destination (Join-Path $stage 'licenses/Qt') -Recurse
@@ -51,10 +59,7 @@ try {
     foreach ($name in @('PREVIEW_NOTES.md','DEPENDENCY_SOURCES.md')) {
         Copy-Item -LiteralPath (Join-Path $root "docs/$name") -Destination $stage
     }
-    foreach ($scene in Get-ChildItem -LiteralPath (Join-Path $stage 'scenes/bundled') -Directory) {
-        & (Join-Path $stage 'AetherWall.SceneCheck.exe') $scene.FullName
-        if ($LASTEXITCODE -ne 0) { throw 'Bundled scene validation failed.' }
-    }
+    & (Join-Path $PSScriptRoot 'Test-ReleasePayload.ps1') -PayloadDirectory $stage -ReportDirectory (Join-Path $root 'out/reports/release-smoke')
     & python (Join-Path $PSScriptRoot 'Release-Bundle.py') seal --payload $stage --revision $Revision
     if ($LASTEXITCODE -ne 0) { throw 'Release payload validation failed.' }
     New-Item -ItemType Directory -Force $release | Out-Null

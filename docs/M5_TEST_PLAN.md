@@ -102,3 +102,23 @@ verify the publish job Summary link, Pre-release label, exact target commit,
 installer/portable/application/Qt source assets and SHA256SUMS.txt. A failed build
 or PR must have no publish job. A successful older workflow run must be rerun on
 the new commit to gain publication. Real upload verification is pending here.
+
+## Unified CI and loader regression
+
+The latest user-provided Windows log shows 68 policy tests pass, while the Qt
+catalog test exits before running with `0xC0000135` (missing DLL dependency).
+CTest now prepends the exact linked Qt Core DLL directory to PATH on Windows.
+The test is retained; a new Windows CI run must establish the result.
+
+One AetherWall CI workflow now owns Linux tests, Core Debug, Manager Release and
+publication. Confirm one workflow starts per main push and that a failed Debug,
+Release or Linux job blocks publication. Check that PRs cannot publish. Windows
+runtime checks must pass with no developer Qt/VS paths: Core --help, all bundled
+SceneCheck examples and a Manager/QML software startup capture. Inspect
+`out/reports/release-smoke/` and dumpbin diagnostics on failures. These checks
+establish startup/dependency loading, not hardware/desktop compatibility.
+
+After this change Linux Manager rebuild, all 70 CTest entries and 44 Python tests
+pass. Workflow YAML/gates, issue form schemas and README links validate locally.
+PowerShell/ISCC execution remains unavailable in this Linux workspace; the new
+Windows runtime checks and live repository community settings require verification.

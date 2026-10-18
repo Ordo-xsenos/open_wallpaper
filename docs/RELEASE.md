@@ -10,7 +10,7 @@ Use VS 2022 x64 Developer PowerShell, Windows SDK/fxc, CMake 3.28+, Ninja,
 Python 3.11+, Inno Setup 6.3+ and a shared Qt **6.8.3 msvc2022_64** kit.
 The development Manager may use newer Qt; the release payload is deliberately
 restricted to one Qt version and matching notices. Keep enough space for Qt sources.
-The workflow `Windows preview release` prepares these inputs on Windows Server 2022;
+The unified workflow `AetherWall CI` prepares these inputs on Windows Server 2022;
 its results do not establish Windows 11 desktop compatibility.
 
 ## Build
@@ -33,9 +33,10 @@ python tools/Package-Source.py
 For Git checkouts pass `-Revision (git rev-parse HEAD)`; source ZIPs use the explicit
 `unversioned-source` marker. Use a fresh notice output directory. Deployment also
 requires an empty staging directory; release builds use a unique stage automatically.
-The release script compiles Release, runs CTest, stages Qt/QML/SChannel and official
-app-local CRT, checks all bundled scenes, seals the payload with hashes, verifies
-again and invokes ISCC. Set `-Iscc PATH` for a nonstandard compiler installation.
+The release script compiles Release once, runs CTest, stages Qt/QML/SChannel and
+official app-local CRT, then exercises staged Core --help, every SceneCheck example,
+and Manager/QML startup with a clean PATH. It seals the payload with hashes,
+verifies again and invokes ISCC. Set `-Iscc PATH` for a nonstandard compiler installation.
 
 Expected outputs in `out/release/`:
 
@@ -85,7 +86,7 @@ test transport and no GPU. They show the current UI, not Windows runtime results
 ## Automatic GitHub Releases
 
 A push to `main` or a manual `release-preview.yml` run on `main` builds/tests the
-preview and publishes a **Pre-release** after both policy and Windows jobs succeed.
+preview and publishes a **Pre-release** after Linux tests, Windows Core Debug and Windows Manager Release succeed.
 Pull requests are built/tested but never published. Only the publication job has
 `contents: write`; it uses the repository's built-in `GITHUB_TOKEN`, not a personal
 access token. Repository/organization policy must permit this permission.
@@ -109,3 +110,23 @@ or explicitly run `gh workflow run release-preview.yml --ref main`. Older succes
 runs do not gain the new publication job retrospectively. The binary files retain
 `packaging/release.json`'s application version; the tag identifies the particular
 build of that version.
+
+## Unified CI and Qt test dependencies
+
+Only `release-preview.yml` is triggered for main pushes, main-targeting PRs and
+manual runs. It owns Linux policy/Python checks, Core Debug, Manager Release,
+packaging and publication; the former `windows-build.yml` is removed. This avoids
+building Core Release twice for each push. Publication depends on every required
+job and still runs only for main push/manual events. No PR token gets write access.
+
+CTest's Windows catalog test prepends the linked Qt Core DLL directory to PATH
+using `ENVIRONMENT_MODIFICATION`; this applies before deployment, including local
+CTest runs. Failure diagnostics include dumpbin dependencies at
+`out/reports/release-dependencies.txt`. Staged runtime checks use only Windows
+system directories on PATH; their logs and software-rendered QML startup capture
+are retained at `out/reports/release-smoke/`. They do not prove desktop/D3D behavior.
+
+Repository description and private reporting setup are documented in
+[COMMUNITY_SETUP.md](COMMUNITY_SETUP.md). If branch protection required checks from
+the old workflow, replace those requirements with the actual Linux, Debug and
+Release job checks from AetherWall CI after the first run; do not disable protection.
