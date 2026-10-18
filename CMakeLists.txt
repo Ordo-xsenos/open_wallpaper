@@ -9,6 +9,13 @@ include(CTest)
 option(AETHERWALL_BUILD_CORE "Build the Windows desktop prototype" ${WIN32})
 option(AETHERWALL_BUILD_MANAGER "Build the dynamically linked Qt Manager" OFF)
 
+if(WIN32)
+    # Third-party headers can include Windows.h even in portable libraries.
+    # Set this for every target before any Windows header is parsed, including
+    # scenes, SceneCheck and policy tests, not only Core/control targets.
+    add_compile_definitions(NOMINMAX WIN32_LEAN_AND_MEAN)
+endif()
+
 find_package(nlohmann_json CONFIG QUIET)
 if(NOT TARGET nlohmann_json::nlohmann_json)
     find_path(AETHERWALL_JSON_INCLUDE_DIR nlohmann/json.hpp REQUIRED)

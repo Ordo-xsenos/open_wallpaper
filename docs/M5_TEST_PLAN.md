@@ -84,3 +84,10 @@ BOM, preserves original metadata/license bytes, and names malformed files in err
 The 24 packaging tests and 12 server tests pass locally after the fix. The Windows
 workflow must be rerun on the updated commit; full build/install acceptance remains
 pending until that run and the manual matrix complete.
+
+The next Windows CI run passed notice collection and reached MSVC compilation,
+then failed at `ScenePackage.cpp:85` with C2589/C2660/C2059 on `std::min`.
+`NOMINMAX` was previously set only for selected Windows targets; it is now set
+before dependency headers for all Windows targets, alongside `WIN32_LEAN_AND_MEAN`.
+Linux Manager rebuild and all 70 CTest entries pass after this change. A fresh
+Windows workflow run is required to verify MSVC compilation and subsequent stages.
