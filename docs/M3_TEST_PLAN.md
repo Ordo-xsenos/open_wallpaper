@@ -21,10 +21,11 @@ ctest --preset win-manager-debug --output-on-failure
 .\out\deploy\win-msvc-debug\AetherWall.Manager.exe --core-window
 ```
 
-`--core-window` makes Manager's Start engine action launch diagnostic windows.
+With Core stopped, `--core-window` makes Manager automatically launch diagnostic windows.
 Verify those before testing experimental desktop integration. For Release repeat
 with `win-manager-release`, then deploy with `-Preset win-msvc-release`.
-Normal Manager launches Core only after the explicit Start engine action. Core
+Normal Manager first probes the existing Core, then starts it automatically once
+if unavailable. `--no-auto-core` disables automatic startup for development. Core
 starts as `--service`: unlimited desktop run, persisted settings/assignments,
 background console detachment and native tray. For isolated data, launch Core
 manually with `--service --mode window --all-monitors --data-dir PATH`.

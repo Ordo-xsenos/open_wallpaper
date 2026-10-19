@@ -18,7 +18,7 @@ the independent Core stays in the system tray.
 [CI builds](https://github.com/Ordo-xsenos/open_wallpaper/actions/workflows/release-preview.yml) ·
 [Report a problem](https://github.com/Ordo-xsenos/open_wallpaper/issues/new/choose)
 
-![AetherWall scene catalog](docs/screenshots/m5-discover-linux.png)
+![AetherWall installed wallpapers](docs/screenshots/manager-library-linux.png)
 
 *Actual Manager screenshot from Linux development. The window labels its test
 connection; this image does not demonstrate Windows desktop rendering.*
@@ -61,17 +61,20 @@ beside it. Both versions store settings and the library in your user profile.
 
 ## First run
 
-1. Open **AetherWall** and choose **Start engine**.
-2. Select a scene in **Library**, choose a monitor, and apply it.
-3. Adjust FPS and pause rules in the performance settings.
+1. Open **AetherWall**. The background engine starts automatically.
+2. Select a scene in **Installed**, choose a monitor, and apply it.
+3. Open **Settings → Performance** to adjust FPS and pause rules.
 
 Closing Manager keeps wallpapers running. To stop everything, use the complete
 exit action in Manager or the tray menu. Exit completely before updating or
 uninstalling. Uninstalling preserves the library, settings, and imported source files.
 
-To test rendering in an ordinary window, launch
-`AetherWall.Manager.exe --core-window`, then start the engine. This diagnostic
-mode helps distinguish GPU problems from desktop integration problems.
+If startup fails, use **Logs** or **Copy diagnostics** in the error strip; the
+library stays available when rendering fails. Administrator rights are not required.
+
+To test rendering in an ordinary window, exit Core completely, then launch
+`AetherWall.Manager.exe --core-window`. This diagnostic mode helps distinguish
+GPU problems from desktop integration problems.
 
 ## Your scenes and catalog
 
@@ -79,8 +82,8 @@ A scene contains `manifest.json`, images, and built-in effects. Import a folder
 or `.awscene` through Library; see the [scene format](docs/SCENE_FORMAT.md)
 and [bundled examples](scenes/README.md).
 
-No public catalog server is configured by default. Open **Discover → Examples**
-for bundled scenes. To use your own catalog, enter its HTTPS address in Settings.
+No public catalog server is configured by default. **Discover** opens the bundled
+examples automatically until you configure a server. To use your own catalog, enter its HTTPS address in Settings.
 The separate [FastAPI server](server/README.md) supports search, moderation, and
 local or S3-compatible storage. Published content requires author rights.
 
@@ -121,3 +124,7 @@ for bugs and ideas. Report vulnerabilities privately following [SECURITY](SECURI
 
 Project code is [MIT](LICENSE). Original bundled scenes use CC0-1.0.
 Dependencies have their own terms: [third-party notices](THIRD_PARTY_NOTICES.md).
+
+## Debug logs
+
+Exit AetherWall through its tray menu, then run **AetherWall Debug** from Start or `AetherWall-Debug.cmd` beside the installed executable. Reproduce the problem and close Manager: the launcher creates a diagnostics ZIP under `%LOCALAPPDATA%\AetherWall\diagnostics`. Send that archive with your report. See [diagnostic instructions](docs/DEBUGGING.md) for direct commands and archive contents.

@@ -33,6 +33,10 @@ Options parseOptions(std::span<const std::wstring> arguments) {
         if (name != L"--monitor-scene" && !seen.insert(name).second) {
             throw std::invalid_argument("Duplicate option");
         }
+        if (name == L"--debug") {
+            options.debug = true;
+            continue;
+        }
         if (name == L"--service") {
             options.service = true;
             continue;
@@ -167,7 +171,7 @@ const wchar_t* usage() {
     return L"AetherWall.Core [--mode window|desktop] [--fps 15|30|60]\n"
            L"  [--duration 0..86400] [--swap-chain auto|flip|blt] [--no-vsync]\n"
            L"  [--warp] [--log-dir PATH] [--scene DIRECTORY_OR_AWSCENE] [--help]\n"
-           L"  [--service] [--data-dir PATH]\n"
+           L"  [--service] [--debug] [--data-dir PATH]\n"
            L"  [--all-monitors] [--list-monitors] [--monitor-scene MONITOR PATH]...\n"
            L"  [--gpu auto|power-saving|high-performance] [--preset eco|balanced|smooth]\n"
            L"  [--pause-fullscreen on|off] [--pause-maximized on|off] [--pause-battery on|off]\n"

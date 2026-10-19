@@ -1,5 +1,21 @@
 # Implementation status
 
+## Manager refresh (2026-10-19)
+
+The user reported a successful installer build followed by an installed Manager
+that could not connect to Core. The machine's logs are unavailable; antivirus
+blocking and the specific Shell/GPU failure are unconfirmed.
+
+- Replaced sidebar navigation with Installed/Discover tabs, a resizable inspector,
+  pinned Apply action and separate settings/performance and monitor controls.
+- Manager probes then starts background Core once without elevation, observes exit
+  and timeout results, and exposes logs/copy diagnostics before IPC connects.
+- Service-mode rendering failure preserves control/library access and reports
+  renderState/renderError. Explicit reload retries bounded recovery.
+- Added Windows child-process lifetime tests and a bounded WARP window smoke check;
+  execution of these new Windows checks remains NOT TESTED locally.
+- Local commands, screenshots and Windows acceptance cases: [Manager refresh](MANAGER_REFRESH.md).
+
 ## Current milestone
 
 **M5 preview packaging and automatic release workflow implemented; Windows release acceptance pending.**

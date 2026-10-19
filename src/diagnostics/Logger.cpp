@@ -70,7 +70,7 @@ std::string utf8(const std::wstring& value) {
     return result;
 }
 
-Logger::Logger(const std::filesystem::path& directory) {
+Logger::Logger(const std::filesystem::path& directory, bool verbose) : verbose_(verbose) {
     const auto root = directory.empty() ? defaultDirectory() : directory;
     std::filesystem::create_directories(root);
     pruneLogs(root);
@@ -83,7 +83,7 @@ Logger::Logger(const std::filesystem::path& directory) {
 }
 
 void Logger::write(const char* level, const std::string& message) {
-    constexpr std::size_t byteLimit = 4 * 1024 * 1024;
+    const std::size_t byteLimit = (verbose_ ? 16u : 4u) * 1024 * 1024;
     if (capped_) {
         return;
     }

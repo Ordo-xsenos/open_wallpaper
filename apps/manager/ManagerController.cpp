@@ -1,11 +1,19 @@
 #include "ManagerController.h"
+#include "CoreProcess.h"
+#include "DebugLog.h"
 #include "storage/SettingsStore.h"
+#include <QClipboard>
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QDesktopServices>
+#include <QDir>
+#include <QFile>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QJsonDocument>
 #include <QLocalSocket>
-#include <QProcess>
+#include <QStandardPaths>
+#include <QSysInfo>
 #include <QUrl>
 #include <algorithm>
 #ifdef _WIN32
@@ -53,8 +61,30 @@ std::string exchange(const std::string& request) {
 }
 } // namespace
 ManagerController::ManagerController(bool diagnostic, QObject* parent, Exchange transport)
-    : QObject(parent), diagnostic_(diagnostic),
+    : ManagerController(diagnostic, parent, std::move(transport), LaunchHooks{}) {}
+ManagerController::ManagerController(bool diagnostic, QObject* parent, Exchange transport,
+                                     LaunchHooks launcher)
+    : QObject(parent), launcher_(std::move(launcher)), diagnostic_(diagnostic),
       exchange_(transport ? std::move(transport) : exchange) {
+    if (!launcher_.start) {
+        auto process = std::make_shared<CoreProcess>();
+        launcher_.start = [this, process] {
+            const auto executable = QCoreApplication::applicationDirPath() + "/AetherWall.Core.exe";
+            if (!QFileInfo::exists(executable))
+                return language() == "ru"
+                           ? QStringLiteral("Файл AetherWall.Core.exe не найден. Переустановите "
+                                            "AetherWall.\n") +
+                                 executable
+                           : QStringLiteral(
+                                 "AetherWall.Core.exe is missing. Reinstall AetherWall.\n") +
+                                 executable;
+            QDir().mkpath(logDirectory());
+            DebugLog::write("Launching Core; executable=" + executable +
+                            "; logs=" + logDirectory());
+            return process->start(executable, diagnostic_, logDirectory(), DebugLog::enabled());
+        };
+        launcher_.exitCode = [process] { return process->exitCode(); };
+    }
     catalog_ = new CatalogClient(this);
     connect(catalog_, &CatalogClient::packageReady, this,
             [this](const QString& path, const QString& id, const QString& sha, qint64 size,
@@ -70,6 +100,7 @@ ManagerController::ManagerController(bool diagnostic, QObject* parent, Exchange 
             });
     settings_ = variant(aetherwall::defaultSettings()).toMap();
     catalog_->configure(settings_);
+    catalog_->useDemo();
     timer_.setInterval(40);
     connect(&timer_, &QTimer::timeout, this, &ManagerController::tick);
     timer_.start();
@@ -91,6 +122,7 @@ void ManagerController::refresh() {
 }
 void ManagerController::enqueue(Task task) { tasks_.push_back(std::move(task)); }
 void ManagerController::tick() {
+    checkStartup();
     if (hasFuture_) {
         if (future_.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
             return;
@@ -101,7 +133,13 @@ void ManagerController::tick() {
             if (response.at("version") != 1 || response.at("requestId") != activeId_ ||
                 !response.at("ok").is_boolean())
                 throw std::runtime_error("Invalid Core response");
+            DebugLog::write("IPC reply id=" + QString::fromStdString(activeId_) +
+                            "; command=" + QString::fromStdString(active_.command) +
+                            "; ok=" + QString::number(response.at("ok").get<bool>()));
             connected_ = true;
+            launchState_ = "connected";
+            launchError_.clear();
+            refreshTimer_.setInterval(3000);
             if (!response.at("ok").get<bool>()) {
                 error_ =
                     QString::fromStdString(response.at("error").at("message").get<std::string>());
@@ -114,11 +152,31 @@ void ManagerController::tick() {
             } else
                 accept(active_, response.at("result"));
         } catch (const std::exception& error) {
+            DebugLog::write("IPC failure id=" + QString::fromStdString(activeId_) +
+                            "; command=" + QString::fromStdString(active_.command) +
+                            "; error=" + QString::fromUtf8(error.what()));
+            if (DebugLog::enabled() && launcher_.exitCode) {
+                if (const auto code = launcher_.exitCode())
+                    DebugLog::write(QStringLiteral("Observed Core exit code=0x%1")
+                                        .arg(*code, 8, 16, QLatin1Char('0')));
+            }
             if (active_.mutation)
                 error_ = QString::fromUtf8(error.what());
             if (active_.command == "importDownloadedScene")
                 catalog_->importFailed(error_);
+            const bool lostConnection = connected_;
             connected_ = false;
+            if (launchState_ != "starting" && launchState_ != "error") {
+                if (lostConnection) {
+                    launchState_ = "error";
+                    launchError_ = QString::fromUtf8(error.what());
+                } else if (autoStart_ && !launchAttempted_) {
+                    startCore();
+                } else {
+                    launchState_ = "error";
+                    launchError_ = QString::fromUtf8(error.what());
+                }
+            }
             pendingMutation_ = false;
             tasks_.clear();
         }
@@ -132,6 +190,8 @@ void ManagerController::tick() {
         active_ = std::move(tasks_.front());
         tasks_.pop_front();
         activeId_ = std::to_string(++nextId_);
+        DebugLog::write("IPC send id=" + QString::fromStdString(activeId_) +
+                        "; command=" + QString::fromStdString(active_.command));
         const auto request = Json{
             {"version", 1},
             {"requestId", activeId_},
@@ -149,6 +209,8 @@ void ManagerController::accept(const Task& task, const Json& value) {
     else if (task.command == "getSettings" || task.command == "updateSettings") {
         settings_ = variant(value).toMap();
         catalog_->configure(settings_);
+        if (settings_.value("catalogBaseUrl").toString().isEmpty() && !catalog_->demo())
+            catalog_->useDemo();
     } else if (task.command == "listInstalledScenes") {
         scenes_ = variant(value).toList();
         for (auto& entry : scenes_) {
@@ -181,27 +243,93 @@ void ManagerController::mutate(const std::string& command, Json params) {
     enqueue({command, std::move(params), true});
     emit changed();
 }
+void ManagerController::enableAutoStart() {
+    autoStart_ = true;
+    // The first status request must finish before deciding whether to launch.
+    if (!hasFuture_ && tasks_.empty() && !connected_ && !launchAttempted_)
+        startCore();
+}
 void ManagerController::startCore() {
-#ifdef _WIN32
-    const auto executable = QCoreApplication::applicationDirPath() + "/AetherWall.Core.exe";
-    if (!QFileInfo::exists(executable)) {
-        error_ = language() == "ru"
-                     ? "Core не найден рядом с Manager. Соберите и разверните оба приложения."
-                     : "Core is missing beside Manager. Build and deploy both applications.";
-        emit changed();
+    if (connected_ || launchState_ == "starting")
+        return;
+    launchAttempted_ = true;
+    DebugLog::write("Requesting Core process start");
+    launchError_ = launcher_.start();
+    DebugLog::write(launchError_.isEmpty() ? "Core process created; waiting for IPC"
+                                           : "Core start failed: " + launchError_);
+    if (!launchError_.isEmpty())
+        launchError_.prepend(language() == "ru" ? QStringLiteral("Не удалось запустить фон. ")
+                                                : QStringLiteral("Wallpaper could not start. "));
+    launchState_ = launchError_.isEmpty() ? "starting" : "error";
+    if (launchError_.isEmpty()) {
+        startupClock_.start();
+        refreshTimer_.setInterval(500);
+    }
+    emit changed();
+}
+void ManagerController::checkStartup() {
+    if (launchState_ != "starting")
+        return;
+    if (const auto code = launcher_.exitCode ? launcher_.exitCode() : std::nullopt) {
+        launchError_ =
+            (language() == "ru"
+                 ? QStringLiteral("Фоновый процесс завершился до подключения (0x%1). Откройте "
+                                  "журнал или скопируйте диагностику.")
+                 : QStringLiteral(
+                       "Core exited before connecting (0x%1). Open logs or copy diagnostics."))
+                .arg(*code, 8, 16, QLatin1Char('0'));
+    } else if (startupClock_.elapsed() >= launcher_.timeoutMs) {
+        launchError_ =
+            language() == "ru"
+                ? QStringLiteral(
+                      "Core не ответил за 15 секунд. Откройте журнал или скопируйте диагностику.")
+                : QStringLiteral(
+                      "Core did not respond within 15 seconds. Open logs or copy diagnostics.");
+    } else {
         return;
     }
-    QStringList arguments{"--service"};
-    if (diagnostic_)
-        arguments << "--mode" << "window" << "--all-monitors";
-    if (!QProcess::startDetached(executable, arguments))
-        error_ = "Cannot start Core. Check its diagnostic log.";
-#else
-    error_ = language() == "ru"
-                 ? "Движок работает только в Windows 11. Здесь доступна проверка интерфейса."
-                 : "The engine requires Windows 11. This build verifies the interface only.";
-#endif
+    DebugLog::write("Core startup failed: " + launchError_);
+    launchState_ = "error";
+    refreshTimer_.setInterval(3000);
     emit changed();
+}
+QString ManagerController::logDirectory() const {
+    if (DebugLog::enabled())
+        return DebugLog::directory();
+    const auto reported = status_.value("logDirectory").toString();
+    if (!reported.isEmpty())
+        return reported;
+#ifdef _WIN32
+    return QDir::fromNativeSeparators(qEnvironmentVariable("LOCALAPPDATA")) + "/AetherWall/logs";
+#else
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+           "/AetherWall/logs";
+#endif
+}
+QString ManagerController::diagnosticText() const {
+    QString result = QStringLiteral("AetherWall %1\nOS: %2 (%3)\nLaunch: %4\nLaunch error: "
+                                    "%5\nRender: %6\nRender error: %7\nLogs: %8\n")
+                         .arg(QCoreApplication::applicationVersion(), QSysInfo::prettyProductName(),
+                              QSysInfo::kernelVersion(), launchState_, launchError_,
+                              status_.value("renderState").toString(),
+                              status_.value("renderError").toString(), logDirectory());
+    if (DebugLog::enabled())
+        result += QStringLiteral("Manager debug: enabled; Core debug: %1\nCore reported logs: %2\n")
+                      .arg(status_.value("debugLogging").toBool() ? "enabled" : "disabled/unknown",
+                           status_.value("logDirectory").toString());
+    const auto files = QDir(logDirectory()).entryInfoList({"m0_*.log"}, QDir::Files, QDir::Time);
+    if (!files.empty()) {
+        QFile file(files.first().absoluteFilePath());
+        if (file.open(QIODevice::ReadOnly)) {
+            file.seek(std::max<qint64>(0, file.size() - 16384));
+            result += "\n" + QString::fromUtf8(file.read(16384));
+        }
+    }
+    return result;
+}
+void ManagerController::copyDiagnostics() {
+    if (qobject_cast<QGuiApplication*>(QCoreApplication::instance()))
+        QGuiApplication::clipboard()->setText(diagnosticText());
 }
 void ManagerController::importScene(const QUrl& path) {
     if (path.isLocalFile())
@@ -242,7 +370,8 @@ void ManagerController::openFolder(const QUrl& folder) {
         QDesktopServices::openUrl(folder);
 }
 void ManagerController::openLogs() {
-    openFolder(QUrl::fromLocalFile(status_.value("logDirectory").toString()));
+    QDir().mkpath(logDirectory());
+    openFolder(QUrl::fromLocalFile(logDirectory()));
 }
 void ManagerController::dismissError() {
     error_.clear();

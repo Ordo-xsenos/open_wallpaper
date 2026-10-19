@@ -269,14 +269,30 @@ int CoreApplication::run(const std::atomic_bool& interrupted) {
             std::cout << utf8(monitor.alias) << "\t" << utf8(monitor.id) << '\n';
         return 0;
     }
+    logger_.debug("Creating control window");
     createControlWindow();
+    logger_.debug("Opening settings, library and control service");
     initializeControl();
-    createSurfaces();
+    logger_.debug("Creating IPC server and tray icon");
     ipc_ = std::make_unique<NamedPipeServer>(control_);
     tray_.install(control_);
+    bool recovering = false;
+    try {
+        logger_.debug("Initializing desktop surfaces and D3D11 renderer");
+        createSurfaces();
+        logger_.debug("Renderer initialized successfully");
+        renderState_ = "ready";
+    } catch (const std::exception& error) {
+        releaseSurfaces();
+        renderError_ = error.what();
+        renderState_ = "failed";
+        renderFailed_ = true;
+        logger_.error("Initial rendering failed; control remains available: " + renderError_);
+        if (!options_.service)
+            throw;
+    }
     const auto started = Clock::now();
     auto metricStarted = started, recoveryAt = started, policyAt = started;
-    bool recovering = false;
     processMetrics_.log(logger_);
     while (!stopping_ && !interrupted.load(std::memory_order_relaxed)) {
         MSG message{};
@@ -295,7 +311,12 @@ int CoreApplication::run(const std::atomic_bool& interrupted) {
         }
         if (ipcReady_) {
             ipcReady_ = false;
-            ipc_->process([this](std::string_view request) { return service_->handle(request); });
+            ipc_->process([this](std::string_view request) {
+                logger_.debug("IPC request received; bytes=" + std::to_string(request.size()));
+                auto response = service_->handle(request);
+                logger_.debug("IPC response ready; bytes=" + std::to_string(response.size()));
+                return response;
+            });
         }
         if (restoreTray_) {
             restoreTray_ = false;
@@ -333,27 +354,38 @@ int CoreApplication::run(const std::atomic_bool& interrupted) {
             return !output->window ||
                    (options_.mode == RunMode::Desktop && !host_.valid(output->window));
         });
-        if (!recovering && (rebuild_ || invalid || outputs_.empty())) {
+        if (!renderFailed_ && !recovering && (rebuild_ || invalid || outputs_.empty())) {
             logger_.warning(
                 "Output topology/device changed; hiding all surfaces and releasing GPU resources");
             releaseSurfaces();
             recovering = true;
+            renderState_ = "recovering";
             recoveryAt = now + 1s;
         }
         if (recovering && !locked_ && !suspended_ && now >= recoveryAt) {
-            if (!recovery_.beginAttempt(now))
-                throw std::runtime_error(
-                    "Recovery stopped: three consecutive failures or six rebuilds in 30 seconds");
-            try {
-                createSurfaces();
-                recovery_.completed(true);
+            if (!recovery_.beginAttempt(now)) {
+                if (!options_.service)
+                    throw std::runtime_error("Rendering recovery exhausted");
+                renderFailed_ = true;
+                renderState_ = "failed";
                 recovering = false;
-            } catch (const std::exception& error) {
-                releaseSurfaces();
-                recovery_.completed(false);
-                logger_.error(std::string("Output recovery failed: ") + error.what());
-                recoveryAt = Clock::now() + 2s;
-            }
+                rebuild_ = false;
+                logger_.error("Rendering recovery exhausted; control remains available: " +
+                              renderError_);
+            } else
+                try {
+                    createSurfaces();
+                    recovery_.completed(true);
+                    recovering = false;
+                    renderState_ = "ready";
+                    renderError_.clear();
+                } catch (const std::exception& error) {
+                    releaseSurfaces();
+                    recovery_.completed(false);
+                    renderError_ = error.what();
+                    logger_.error(std::string("Output recovery failed: ") + error.what());
+                    recoveryAt = Clock::now() + 2s;
+                }
         }
         now = Clock::now();
         if (policyChanged_ || now >= policyAt) {

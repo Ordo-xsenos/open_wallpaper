@@ -18,7 +18,7 @@ etadi — mustaqil Core tizim treyida qoladi.
 [CI yig‘ilmalari](https://github.com/Ordo-xsenos/open_wallpaper/actions/workflows/release-preview.yml) ·
 [Muammo haqida xabar berish](https://github.com/Ordo-xsenos/open_wallpaper/issues/new/choose)
 
-![AetherWall sahnalar katalogi](docs/screenshots/m5-discover-linux.png)
+![AetherWall o‘rnatilgan fonlar kutubxonasi](docs/screenshots/manager-library-linux.png)
 
 *Linux ishlab chiqish muhitida olingan haqiqiy Manager skrinshoti. Oynada sinov
 ulanishi belgilangan; bu rasm Windows ish stolida chizishni namoyish qilmaydi.*
@@ -62,17 +62,20 @@ sozlamalar va kutubxonani foydalanuvchi profilida saqlaydi.
 
 ## Birinchi ishga tushirish
 
-1. **AetherWall** ilovasini oching va **Start engine** tugmasini bosing.
-2. **Library** bo‘limida sahna va monitorni tanlab, qo‘llang.
-3. Unumdorlik sozlamalarida FPS va pauza qoidalarini belgilang.
+1. **AetherWall** ilovasini oching — fon dvigateli avtomatik ishga tushadi.
+2. **Installed** bo‘limida sahna va monitorni tanlab, qo‘llang.
+3. **Settings → Performance** bo‘limida FPS va pauza qoidalarini belgilang.
 
 Manager oynasi yopilganda fonlar ishlashda davom etadi. Barchasini to‘xtatish
 uchun ilova yoki trey menyusidagi to‘liq chiqish buyrug‘idan foydalaning.
 Yangilash yoki o‘chirishdan oldin to‘liq chiqing. Ilovani o‘chirish kutubxona,
 sozlamalar va import qilingan manba fayllarini saqlab qoladi.
 
-Oddiy oynada chizishni tekshirish uchun `AetherWall.Manager.exe --core-window`
-buyrug‘ini ishga tushiring, keyin dvigatelni yoqing. Bu diagnostika rejimi GPU
+Ishga tushirishda xato bo‘lsa, **Logs** yoki **Copy diagnostics** tugmasini bosing.
+Fon chizilmasa ham kutubxona ochiq qoladi. Administrator huquqi talab qilinmaydi.
+
+Oddiy oynada chizishni tekshirish uchun avval Core dasturidan to‘liq chiqing, so‘ng
+`AetherWall.Manager.exe --core-window` buyrug‘ini ishga tushiring. Bu rejim GPU
 muammolarini ish stoli integratsiyasi muammolaridan ajratishga yordam beradi.
 
 ## O‘z sahnalaringiz va katalog
@@ -81,8 +84,8 @@ Sahna `manifest.json`, rasmlar va ichki effektlardan iborat. Papka yoki `.awscen
 paketini Library orqali import qiling. [Sahna formati](docs/SCENE_FORMAT.md) va
 [namunalar](scenes/README.md) bilan tanishing.
 
-Standart holatda ommaviy katalog serveri ko‘rsatilmagan. **Discover → Examples**
-bo‘limida ichki namunalarni ochish mumkin. O‘z katalogingiz uchun sozlamalarda
+Standart holatda ommaviy katalog serveri ko‘rsatilmagan. Serverni sozlamaguningizcha
+**Discover** bo‘limi ichki namunalarni avtomatik ko‘rsatadi. O‘z katalogingiz uchun sozlamalarda
 HTTPS manzilini kiriting. Alohida [FastAPI serveri](server/README.md) qidiruv,
 moderatsiya, mahalliy yoki S3 bilan mos saqlash tizimini qo‘llaydi. Kontentni
 nashr qilish uchun muallif huquqi yoki ruxsati bo‘lishi kerak.
@@ -125,3 +128,7 @@ foydalaning. Xavfsizlik zaifliklarini [SECURITY](SECURITY.md) bo‘yicha maxfiy 
 
 Loyiha kodi — [MIT](LICENSE). Original namunalar — CC0-1.0.
 Bog‘liqliklarning o‘z shartlari bor: [uchinchi tomon litsenziyalari](THIRD_PARTY_NOTICES.md).
+
+## Diagnostika jurnallari
+
+Tizim treyidagi menyu orqali AetherWall dasturidan to‘liq chiqing. Start menyusidan **AetherWall Debug** yoki dastur yonidagi `AetherWall-Debug.cmd` faylini ishga tushiring. Muammoni takrorlang va Manager oynasini yoping: ishga tushiruvchi `%LOCALAPPDATA%\AetherWall\diagnostics` ichida diagnostika ZIP arxivini yaratadi. Xato tavsifi bilan shu arxivni yuboring. [Batafsil ko‘rsatmalar](docs/DEBUGGING.md).

@@ -21,6 +21,7 @@ struct Options {
     bool warp = false;
     bool help = false;
     bool service = false;
+    bool debug = false;
     std::filesystem::path dataDirectory;
     bool allMonitors = false;
     bool listMonitors = false;

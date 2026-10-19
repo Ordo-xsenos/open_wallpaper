@@ -38,13 +38,13 @@ Push-Location $root
 try {
     & cmake --build --preset win-manager-release
     if ($LASTEXITCODE -ne 0) { throw 'Release compilation failed.' }
-    $catalogLog = Join-Path $build 'apps/manager/catalog-results.txt'
-    if (Test-Path -LiteralPath $catalogLog) { Remove-Item -LiteralPath $catalogLog }
+    $qtTestDirectory = Join-Path $build 'apps/manager'
+    Get-ChildItem -LiteralPath $qtTestDirectory -Filter '*-results.txt' -File | Remove-Item
     & ctest --preset win-manager-release --output-on-failure --no-tests=error
     if ($LASTEXITCODE -ne 0) {
         # Keep Qt assertions visible even when Windows does not capture stdout.
-        if (Test-Path -LiteralPath $catalogLog) {
-            Get-Content -LiteralPath $catalogLog | ForEach-Object { Write-Host $_ }
+        Get-ChildItem -LiteralPath $qtTestDirectory -Filter '*-results.txt' -File | ForEach-Object {
+            Get-Content -LiteralPath $_.FullName | ForEach-Object { Write-Host $_ }
         }
         $report = Join-Path $root 'out/reports'
         New-Item -ItemType Directory -Force -Path $report | Out-Null
@@ -65,6 +65,10 @@ try {
     foreach ($name in @('PREVIEW_NOTES.md','DEPENDENCY_SOURCES.md')) {
         Copy-Item -LiteralPath (Join-Path $root "docs/$name") -Destination $stage
     }
+    foreach ($name in @('AetherWall-Debug.cmd','Start-AetherWallDebug.ps1','Collect-AetherWallDiagnostics.ps1')) {
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $stage
+    }
+    Copy-Item -LiteralPath (Join-Path $root 'docs/DEBUGGING.md') -Destination $stage
     & (Join-Path $PSScriptRoot 'Test-ReleasePayload.ps1') -PayloadDirectory $stage -ReportDirectory (Join-Path $root 'out/reports/release-smoke')
     & python (Join-Path $PSScriptRoot 'Release-Bundle.py') seal --payload $stage --revision $Revision
     if ($LASTEXITCODE -ne 0) { throw 'Release payload validation failed.' }

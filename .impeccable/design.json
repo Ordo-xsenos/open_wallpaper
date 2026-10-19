@@ -1,1 +1,447 @@
-{"platform":"windows","mode":"operate","tokens":{"background":"#15181e","surface":"#1e232b","control":"#2b323d","text":"#f0f2f6","muted":"#b8c1ce","accent":"#85b7ff","spacing":8,"radius":12},"source":"DESIGN.md"}
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-19T16:31:39.598015+00:00",
+  "title": "Design System: AetherWall Manager",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Accent",
+        "tonalRamp": [
+          "oklch(15% 0.1167 257.47)",
+          "oklch(27% 0.1167 257.47)",
+          "oklch(39% 0.1167 257.47)",
+          "oklch(51% 0.1167 257.47)",
+          "oklch(63% 0.1167 257.47)",
+          "oklch(75% 0.1167 257.47)",
+          "oklch(87% 0.1167 257.47)",
+          "oklch(95% 0.1167 257.47)"
+        ]
+      },
+      "accent-fill": {
+        "role": "primary",
+        "displayName": "Accent Fill",
+        "tonalRamp": [
+          "oklch(15% 0.0916 241.68)",
+          "oklch(27% 0.0916 241.68)",
+          "oklch(39% 0.0916 241.68)",
+          "oklch(51% 0.0916 241.68)",
+          "oklch(63% 0.0916 241.68)",
+          "oklch(75% 0.0916 241.68)",
+          "oklch(87% 0.0916 241.68)",
+          "oklch(95% 0.0916 241.68)"
+        ]
+      },
+      "accent-pressed": {
+        "role": "primary",
+        "displayName": "Accent Pressed",
+        "tonalRamp": [
+          "oklch(15% 0.0875 243.10)",
+          "oklch(27% 0.0875 243.10)",
+          "oklch(39% 0.0875 243.10)",
+          "oklch(51% 0.0875 243.10)",
+          "oklch(63% 0.0875 243.10)",
+          "oklch(75% 0.0875 243.10)",
+          "oklch(87% 0.0875 243.10)",
+          "oklch(95% 0.0875 243.10)"
+        ]
+      },
+      "accent-border": {
+        "role": "primary",
+        "displayName": "Accent Border",
+        "tonalRamp": [
+          "oklch(15% 0.0904 241.40)",
+          "oklch(27% 0.0904 241.40)",
+          "oklch(39% 0.0904 241.40)",
+          "oklch(51% 0.0904 241.40)",
+          "oklch(63% 0.0904 241.40)",
+          "oklch(75% 0.0904 241.40)",
+          "oklch(87% 0.0904 241.40)",
+          "oklch(95% 0.0904 241.40)"
+        ]
+      },
+      "focus": {
+        "role": "primary",
+        "displayName": "Focus",
+        "tonalRamp": [
+          "oklch(15% 0.0729 242.52)",
+          "oklch(27% 0.0729 242.52)",
+          "oklch(39% 0.0729 242.52)",
+          "oklch(51% 0.0729 242.52)",
+          "oklch(63% 0.0729 242.52)",
+          "oklch(75% 0.0729 242.52)",
+          "oklch(87% 0.0729 242.52)",
+          "oklch(95% 0.0729 242.52)"
+        ]
+      },
+      "card-focus": {
+        "role": "primary",
+        "displayName": "Card Focus",
+        "tonalRamp": [
+          "oklch(15% 0.0331 243.96)",
+          "oklch(27% 0.0331 243.96)",
+          "oklch(39% 0.0331 243.96)",
+          "oklch(51% 0.0331 243.96)",
+          "oklch(63% 0.0331 243.96)",
+          "oklch(75% 0.0331 243.96)",
+          "oklch(87% 0.0331 243.96)",
+          "oklch(95% 0.0331 243.96)"
+        ]
+      },
+      "field-focus": {
+        "role": "primary",
+        "displayName": "Field Focus",
+        "tonalRamp": [
+          "oklch(15% 0.0862 241.33)",
+          "oklch(27% 0.0862 241.33)",
+          "oklch(39% 0.0862 241.33)",
+          "oklch(51% 0.0862 241.33)",
+          "oklch(63% 0.0862 241.33)",
+          "oklch(75% 0.0862 241.33)",
+          "oklch(87% 0.0862 241.33)",
+          "oklch(95% 0.0862 241.33)"
+        ]
+      },
+      "window": {
+        "role": "neutral",
+        "displayName": "Window",
+        "tonalRamp": [
+          "oklch(15% 0.0262 255.76)",
+          "oklch(27% 0.0262 255.76)",
+          "oklch(39% 0.0262 255.76)",
+          "oklch(51% 0.0262 255.76)",
+          "oklch(63% 0.0262 255.76)",
+          "oklch(75% 0.0262 255.76)",
+          "oklch(87% 0.0262 255.76)",
+          "oklch(95% 0.0262 255.76)"
+        ]
+      },
+      "header": {
+        "role": "neutral",
+        "displayName": "Header",
+        "tonalRamp": [
+          "oklch(15% 0.0315 254.27)",
+          "oklch(27% 0.0315 254.27)",
+          "oklch(39% 0.0315 254.27)",
+          "oklch(51% 0.0315 254.27)",
+          "oklch(63% 0.0315 254.27)",
+          "oklch(75% 0.0315 254.27)",
+          "oklch(87% 0.0315 254.27)",
+          "oklch(95% 0.0315 254.27)"
+        ]
+      },
+      "status": {
+        "role": "neutral",
+        "displayName": "Status",
+        "tonalRamp": [
+          "oklch(15% 0.0266 253.31)",
+          "oklch(27% 0.0266 253.31)",
+          "oklch(39% 0.0266 253.31)",
+          "oklch(51% 0.0266 253.31)",
+          "oklch(63% 0.0266 253.31)",
+          "oklch(75% 0.0266 253.31)",
+          "oklch(87% 0.0266 253.31)",
+          "oklch(95% 0.0266 253.31)"
+        ]
+      },
+      "inspector": {
+        "role": "neutral",
+        "displayName": "Inspector",
+        "tonalRamp": [
+          "oklch(15% 0.0277 255.17)",
+          "oklch(27% 0.0277 255.17)",
+          "oklch(39% 0.0277 255.17)",
+          "oklch(51% 0.0277 255.17)",
+          "oklch(63% 0.0277 255.17)",
+          "oklch(75% 0.0277 255.17)",
+          "oklch(87% 0.0277 255.17)",
+          "oklch(95% 0.0277 255.17)"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Card",
+        "tonalRamp": [
+          "oklch(15% 0.0168 259.77)",
+          "oklch(27% 0.0168 259.77)",
+          "oklch(39% 0.0168 259.77)",
+          "oklch(51% 0.0168 259.77)",
+          "oklch(63% 0.0168 259.77)",
+          "oklch(75% 0.0168 259.77)",
+          "oklch(87% 0.0168 259.77)",
+          "oklch(95% 0.0168 259.77)"
+        ]
+      },
+      "card-hover": {
+        "role": "neutral",
+        "displayName": "Card Hover",
+        "tonalRamp": [
+          "oklch(15% 0.0220 259.38)",
+          "oklch(27% 0.0220 259.38)",
+          "oklch(39% 0.0220 259.38)",
+          "oklch(51% 0.0220 259.38)",
+          "oklch(63% 0.0220 259.38)",
+          "oklch(75% 0.0220 259.38)",
+          "oklch(87% 0.0220 259.38)",
+          "oklch(95% 0.0220 259.38)"
+        ]
+      },
+      "control": {
+        "role": "neutral",
+        "displayName": "Control",
+        "tonalRamp": [
+          "oklch(15% 0.0244 255.69)",
+          "oklch(27% 0.0244 255.69)",
+          "oklch(39% 0.0244 255.69)",
+          "oklch(51% 0.0244 255.69)",
+          "oklch(63% 0.0244 255.69)",
+          "oklch(75% 0.0244 255.69)",
+          "oklch(87% 0.0244 255.69)",
+          "oklch(95% 0.0244 255.69)"
+        ]
+      },
+      "control-hover": {
+        "role": "neutral",
+        "displayName": "Control Hover",
+        "tonalRamp": [
+          "oklch(15% 0.0254 255.06)",
+          "oklch(27% 0.0254 255.06)",
+          "oklch(39% 0.0254 255.06)",
+          "oklch(51% 0.0254 255.06)",
+          "oklch(63% 0.0254 255.06)",
+          "oklch(75% 0.0254 255.06)",
+          "oklch(87% 0.0254 255.06)",
+          "oklch(95% 0.0254 255.06)"
+        ]
+      },
+      "combo-hover": {
+        "role": "neutral",
+        "displayName": "Combo Hover",
+        "tonalRamp": [
+          "oklch(15% 0.0298 254.17)",
+          "oklch(27% 0.0298 254.17)",
+          "oklch(39% 0.0298 254.17)",
+          "oklch(51% 0.0298 254.17)",
+          "oklch(63% 0.0298 254.17)",
+          "oklch(75% 0.0298 254.17)",
+          "oklch(87% 0.0298 254.17)",
+          "oklch(95% 0.0298 254.17)"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field",
+        "tonalRamp": [
+          "oklch(15% 0.0220 257.28)",
+          "oklch(27% 0.0220 257.28)",
+          "oklch(39% 0.0220 257.28)",
+          "oklch(51% 0.0220 257.28)",
+          "oklch(63% 0.0220 257.28)",
+          "oklch(75% 0.0220 257.28)",
+          "oklch(87% 0.0220 257.28)",
+          "oklch(95% 0.0220 257.28)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "tonalRamp": [
+          "oklch(15% 0.0264 256.80)",
+          "oklch(27% 0.0264 256.80)",
+          "oklch(39% 0.0264 256.80)",
+          "oklch(51% 0.0264 256.80)",
+          "oklch(63% 0.0264 256.80)",
+          "oklch(75% 0.0264 256.80)",
+          "oklch(87% 0.0264 256.80)",
+          "oklch(95% 0.0264 256.80)"
+        ]
+      },
+      "field-border": {
+        "role": "neutral",
+        "displayName": "Field Border",
+        "tonalRamp": [
+          "oklch(15% 0.0251 255.05)",
+          "oklch(27% 0.0251 255.05)",
+          "oklch(39% 0.0251 255.05)",
+          "oklch(51% 0.0251 255.05)",
+          "oklch(63% 0.0251 255.05)",
+          "oklch(75% 0.0251 255.05)",
+          "oklch(87% 0.0251 255.05)",
+          "oklch(95% 0.0251 255.05)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Text",
+        "tonalRamp": [
+          "oklch(15% 0.0069 247.90)",
+          "oklch(27% 0.0069 247.90)",
+          "oklch(39% 0.0069 247.90)",
+          "oklch(51% 0.0069 247.90)",
+          "oklch(63% 0.0069 247.90)",
+          "oklch(75% 0.0069 247.90)",
+          "oklch(87% 0.0069 247.90)",
+          "oklch(95% 0.0069 247.90)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15% 0.0209 257.48)",
+          "oklch(27% 0.0209 257.48)",
+          "oklch(39% 0.0209 257.48)",
+          "oklch(51% 0.0209 257.48)",
+          "oklch(63% 0.0209 257.48)",
+          "oklch(75% 0.0209 257.48)",
+          "oklch(87% 0.0209 257.48)",
+          "oklch(95% 0.0209 257.48)"
+        ]
+      },
+      "placeholder": {
+        "role": "neutral",
+        "displayName": "Placeholder",
+        "tonalRamp": [
+          "oklch(15% 0.0253 253.99)",
+          "oklch(27% 0.0253 253.99)",
+          "oklch(39% 0.0253 253.99)",
+          "oklch(51% 0.0253 253.99)",
+          "oklch(63% 0.0253 253.99)",
+          "oklch(75% 0.0253 253.99)",
+          "oklch(87% 0.0253 253.99)",
+          "oklch(95% 0.0253 253.99)"
+        ]
+      },
+      "status-ready": {
+        "role": "neutral",
+        "displayName": "Status Ready",
+        "tonalRamp": [
+          "oklch(15% 0.0718 154.03)",
+          "oklch(27% 0.0718 154.03)",
+          "oklch(39% 0.0718 154.03)",
+          "oklch(51% 0.0718 154.03)",
+          "oklch(63% 0.0718 154.03)",
+          "oklch(75% 0.0718 154.03)",
+          "oklch(87% 0.0718 154.03)",
+          "oklch(95% 0.0718 154.03)"
+        ]
+      },
+      "status-attention": {
+        "role": "neutral",
+        "displayName": "Status Attention",
+        "tonalRamp": [
+          "oklch(15% 0.1005 71.93)",
+          "oklch(27% 0.1005 71.93)",
+          "oklch(39% 0.1005 71.93)",
+          "oklch(51% 0.1005 71.93)",
+          "oklch(63% 0.1005 71.93)",
+          "oklch(75% 0.1005 71.93)",
+          "oklch(87% 0.1005 71.93)",
+          "oklch(95% 0.1005 71.93)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Selected scene title."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Settings, display and empty-state headings."
+      },
+      "app-header": {
+        "displayName": "App Header",
+        "purpose": "Application and dialog headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Controls, scene names and explanatory text."
+      },
+      "metadata": {
+        "displayName": "Metadata",
+        "purpose": "Card attribution and footer."
+      }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Apply button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Explicit pinned primary action. Portable documentation translation of native QML; not application HTML.",
+      "html": "<button class=\"ds-apply\">Apply scene</button>",
+      "css": ".ds-apply{font-family:\"Segoe UI\",sans-serif;font-size:13px;color:#edf1f5;border-radius:3px;min-width:80px;min-height:34px;padding:7px 14px;border:1px solid #495361;background:#303945;cursor:pointer;background:#316e98;border-color:#528eb9}.ds-apply:hover{background:#316e98}.ds-apply:active{background:#255d85}.ds-apply:focus-visible{outline:2px solid #a9d9ff;outline-offset:1px}.ds-apply:disabled{opacity:.45;cursor:default}"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Library and settings actions. Portable documentation translation of native QML; not application HTML.",
+      "html": "<button class=\"ds-secondary\">Import</button>",
+      "css": ".ds-secondary{font-family:\"Segoe UI\",sans-serif;font-size:13px;color:#edf1f5;border-radius:3px;min-width:80px;min-height:34px;padding:7px 14px;border:1px solid #495361;background:#303945;cursor:pointer;}.ds-secondary:hover{background:#414b58}.ds-secondary:active{background:#255d85}.ds-secondary:focus-visible{outline:2px solid #a9d9ff;outline-offset:1px}.ds-secondary:disabled{opacity:.45;cursor:default}"
+    },
+    {
+      "name": "Search field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "Compact library search. Portable documentation translation of native QML; not application HTML.",
+      "html": "<input class=\"ds-search\" aria-label=\"Search title or author\" placeholder=\"Search title or author\">",
+      "css": ".ds-search{font-family:\"Segoe UI\",sans-serif;font-size:13px;color:#edf1f5;border-radius:3px;height:34px;padding:0 10px;background:#171e28;border:1px solid #47515e;min-width:220px}.ds-search::placeholder{color:#a8b4c3}.ds-search:hover{border-color:#495361}.ds-search:focus-visible{outline:1px solid #83bde8;border-color:#83bde8}.ds-search::selection{background:#316e98;color:white}"
+    },
+    {
+      "name": "Top navigation",
+      "kind": "nav",
+      "refersTo": "button-secondary",
+      "description": "Checked Installed/Discover navigation. Portable documentation translation of native QML; not application HTML.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Library pages\"><button aria-current=\"page\">Installed</button><button>Discover</button></nav>",
+      "css": ".ds-nav{display:flex;gap:10px;padding:12px 18px;background:#273342}.ds-nav button{font-family:\"Segoe UI\",sans-serif;font-size:13px;color:#edf1f5;border-radius:3px;min-width:80px;min-height:34px;padding:7px 14px;border:1px solid #495361;background:#303945;cursor:pointer;min-height:38px}.ds-nav button[aria-current]{background:#316e98;border-color:#528eb9}.ds-nav button:hover{background:#414b58}.ds-nav button[aria-current]:hover{background:#316e98}.ds-nav button:active{background:#255d85}.ds-nav button:focus-visible{outline:2px solid #a9d9ff;outline-offset:1px}"
+    },
+    {
+      "name": "Scene card",
+      "kind": "card",
+      "refersTo": "scene-card",
+      "description": "Static image region and selected outline. Portable documentation translation of native QML; not application HTML.",
+      "html": "<button class=\"ds-scene\" aria-pressed=\"true\"><span class=\"ds-preview\">Original scene preview</span><span class=\"ds-title\">Floating gradient</span><span class=\"ds-author\">AetherWall contributors</span></button>",
+      "css": ".ds-scene{font-family:\"Segoe UI\",sans-serif;font-size:13px;color:#edf1f5;border-radius:3px;padding:0;text-align:left;width:240px;background:#1e232b;border:2px solid #85b7ff;overflow:hidden;cursor:pointer}.ds-preview{display:grid;place-items:center;aspect-ratio:16/9;background:#171e28;color:#b8c1ce;font-size:12px}.ds-title,.ds-author{display:block;padding:6px 10px}.ds-author{font-size:12px;color:#b8c1ce}.ds-scene:hover{background:#2b323d}.ds-scene:active{background:#2b323d}.ds-scene:focus-visible{outline:2px solid #d8edff;outline-offset:1px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Classic Wallpaper Workbench",
+    "overview": "AetherWall is a native Windows 11 desktop utility in Operate mode. The user-approved direction closely follows the classic Wallpaper Engine experience: compact controls, graphite surfaces, blue selection, and original scene imagery as the visual focus. Segoe UI and modest corners belong to this established desktop world.\n\nThe Manager selects, inspects and explicitly applies scenes while the independent Core owns rendering. The interface makes connection and renderer state visible and keeps the primary action within reach as content scrolls. This documented implementation replaces the former sidebar/Fusion direction.",
+    "keyCharacteristics": [
+      "Compact, image-led desktop browsing.",
+      "Flat graphite layers and restrained blue state cues.",
+      "Persistent application controls and explicit Apply.",
+      "Russian and English interface copy with native keyboard semantics."
+    ],
+    "rules": [
+      {
+        "name": "The State Truth Rule",
+        "body": "Connection, test transport and renderer readiness determine status copy; a green indicator alone never proves wallpaper rendering.",
+        "section": "colors"
+      },
+      {
+        "name": "The Explicit Apply Rule",
+        "body": "Selecting or double-clicking a thumbnail never applies a scene. Only the pinned Apply action changes the wallpaper.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do keep the native Windows utility character and the approved classic Wallpaper Engine resemblance.",
+      "Do use original static scene previews and identify fixture transport as having no GPU.",
+      "Do preserve the pinned Apply action, scrollable inspector and resizable split.",
+      "Do distinguish selection from keyboard focus and expose accessible control names.",
+      "Do localize application-owned dialogs and actions with the current RU/EN setting."
+    ],
+    "donts": [
+      "Don't restore the superseded navigation rail, rounded preview tiles or Fusion visual direction.",
+      "Don't add decorative display typography, oversized cards, floating shadows or promotional page treatments.",
+      "Don't apply a scene from thumbnail selection or double-click.",
+      "Don't imply Windows acceptance, GPU activity or working desktop attachment from Linux offscreen captures."
+    ]
+  }
+}

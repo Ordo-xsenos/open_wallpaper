@@ -33,7 +33,7 @@ The server disconnects malformed frame lengths before enqueueing a command.
 | Command | Params | Result / behavior |
 | --- | --- | --- |
 | ping | `{}` | Engine name and protocol version |
-| getStatus | `{}` | Runtime mode, output count, data/log paths, settings recovery warning |
+| getStatus | `{}` | Runtime mode, output count, data/log paths, renderState/renderError, settings recovery warning |
 | getMonitors | `{}` | Logical monitors, physical bounds/DPI/Hz, pause state, persisted assignments |
 | getSettings | `{}` | Complete schemaVersion 2 settings object |
 | updateSettings | `{settings:{...}}` | Strict complete replacement; persist, update runtime; compensate on runtime rejection |
@@ -46,7 +46,7 @@ The server disconnects malformed frame lengths before enqueueing a command.
 | deleteScene | `{sceneId:"uuid"}` | Delete managed copy only; reject active/assigned scenes |
 | pause / resume | `{monitorId:"device-path or *"}` | Independent manual pause blocker; automatic blockers remain active |
 | getMetrics | `{}` | Last observed per-output five-second metrics; empty until measured |
-| reloadDisplayTopology | `{}` | Request bounded output rebuild |
+| reloadDisplayTopology | `{}` | Request bounded output rebuild; explicitly retry exhausted rendering recovery |
 | stop | `{}` | Reply, then stop Core and close matching Manager windows on this desktop |
 
 Full settings example:
@@ -80,3 +80,21 @@ M3 schema-v1 settings migrate in memory with catalog disabled by default; the ne
 save persists schema v2. Core stores catalog configuration but performs no network
 requests. Manager validates URL origins before updating settings. Library schema
 v2 adds successful download receipts without modifying scene/favorite rows.
+
+## Rendering and startup status
+
+Core establishes control before initializing output surfaces. In `--service` mode,
+a failed initial render or exhausted output recovery releases owned surfaces/GPU
+resources and leaves library, settings, tray and IPC available. `getStatus` adds
+`renderState` (`initializing`, `ready`, `recovering`, `failed`) and `renderError`
+(the latest rendering failure, empty after successful recovery). Connection alone
+is not evidence that wallpapers are rendering. Explicit `reloadDisplayTopology`
+resets an exhausted recovery budget and starts another bounded rebuild.
+
+Manager probes before automatic launch, starts at most once automatically, and
+observes its own child without terminating it when Manager closes. Connection
+readiness has a 15-second launch deadline; process-creation errors, early exit
+codes and connection timeouts are separate diagnostics. No automatic crash loop
+or privilege elevation is used. `--capture` and `--no-auto-core` suppress launch.
+
+With runtime `--debug`, `getStatus.debugLogging` is true. Manager and child Core can share a session directory; diagnostics never include IPC parameter or response bodies. See [DEBUGGING.md](DEBUGGING.md).

@@ -9,6 +9,9 @@ void CoreApplication::initializeControl() {
     RuntimeControl runtime;
     runtime.status = [this] {
         return Json{{"running", true},
+                    {"debugLogging", options_.debug},
+                    {"renderState", renderState_},
+                    {"renderError", renderError_},
                     {"mode", options_.mode == RunMode::Desktop ? "desktop" : "window"},
                     {"outputCount", outputs_.size()},
                     {"dataDirectory", pathText(options_.dataDirectory)},
@@ -35,7 +38,13 @@ void CoreApplication::initializeControl() {
     runtime.stop = [this] {
         stopAfter_ = FrameClock::Clock::now() + std::chrono::milliseconds(500);
     };
-    runtime.reload = [this] { rebuild_ = true; };
+    runtime.reload = [this] {
+        if (renderFailed_) {
+            recovery_ = RecoveryPolicy{};
+            renderFailed_ = false;
+        }
+        rebuild_ = true;
+    };
     runtime.active = [this](const std::filesystem::path& path) {
         return std::any_of(outputs_.begin(), outputs_.end(),
                            [&](const auto& output) { return output->scenePath == path; });

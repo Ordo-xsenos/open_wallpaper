@@ -23,11 +23,22 @@ BOOL WINAPI consoleHandler(DWORD event) {
 class ConsoleHandler {
   public:
     ConsoleHandler() {
+        // Manager starts the background Core without a console. Registering a
+        // console handler in that process can fail before the engine is initialized.
+        if (GetConsoleCP() == 0)
+            return;
         if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
             aetherwall::throwLastError("SetConsoleCtrlHandler");
         }
+        registered_ = true;
     }
-    ~ConsoleHandler() { SetConsoleCtrlHandler(consoleHandler, FALSE); }
+    ~ConsoleHandler() {
+        if (registered_)
+            SetConsoleCtrlHandler(consoleHandler, FALSE);
+    }
+
+  private:
+    bool registered_ = false;
 };
 
 class ComApartment {
@@ -58,23 +69,30 @@ int wmain(int argumentCount, wchar_t* arguments[]) {
         return 0;
     }
     try {
-        UniqueHandle runningMutex(CreateMutexW(nullptr, FALSE, L"Local\\AetherWall.Core.Running"));
-        if (!runningMutex)
-            throwLastError("Create Core running marker");
-        const ComApartment com;
-        const ConsoleHandler console;
-        Logger logger(options.logDirectory);
-        if (options.service && options.mode == RunMode::Desktop && !options.listMonitors)
-            FreeConsole();
+        Logger logger(options.logDirectory, options.debug);
+        logger.debug("Core process entered main; pid=" + std::to_string(GetCurrentProcessId()));
         try {
+            UniqueHandle runningMutex(
+                CreateMutexW(nullptr, FALSE, L"Local\\AetherWall.Core.Running"));
+            if (!runningMutex)
+                throwLastError("Create Core running marker");
+            logger.debug("Initializing COM and console handling");
+            const ComApartment com;
+            const ConsoleHandler console;
+            if (options.service && options.mode == RunMode::Desktop && !options.listMonitors)
+                FreeConsole();
             logger.info("AetherWall " AETHERWALL_VERSION "; mode=" +
                         std::string(options.mode == RunMode::Desktop ? "desktop" : "window") +
                         " fps=" + std::to_string(options.fps) +
                         " durationSeconds=" + std::to_string(options.durationSeconds) +
                         " vsync=" + std::to_string(options.vsync));
+            logger.debug("Checking Windows environment and DPI awareness");
             initializeWindowsEnvironment(logger, options.mode == RunMode::Desktop);
             CoreApplication application(logger, options);
-            return application.run(interrupted);
+            logger.debug("Entering Core application");
+            const auto result = application.run(interrupted);
+            logger.debug("Core shutdown complete; exit=" + std::to_string(result));
+            return result;
         } catch (const std::exception& error) {
             // CoreApplication has already destroyed its surface and graphics resources.
             logger.error(std::string("Safe failure: ") + error.what());

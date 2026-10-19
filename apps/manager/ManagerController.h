@@ -1,6 +1,7 @@
 #pragma once
 #include "CatalogClient.h"
 #include "ipc/Protocol.h"
+#include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
 #include <QUrl>
@@ -8,12 +9,15 @@
 #include <QtQml/qqmlregistration.h>
 #include <deque>
 #include <future>
+#include <optional>
 
 class ManagerController : public QObject {
     Q_OBJECT
     QML_NAMED_ELEMENT(ManagerController)
     QML_UNCREATABLE("Created by the Manager executable")
     Q_PROPERTY(CatalogClient* catalog READ catalog CONSTANT)
+    Q_PROPERTY(QString launchState READ launchState NOTIFY changed)
+    Q_PROPERTY(QString launchError READ launchError NOTIFY changed)
     Q_PROPERTY(bool connected READ connected NOTIFY changed)
     Q_PROPERTY(bool busy READ busy NOTIFY changed)
     Q_PROPERTY(QString error READ error NOTIFY changed)
@@ -25,7 +29,13 @@ class ManagerController : public QObject {
     Q_PROPERTY(QVariantMap status READ status NOTIFY changed)
   public:
     using Exchange = std::function<std::string(const std::string&)>;
+    struct LaunchHooks {
+        std::function<QString()> start;
+        std::function<std::optional<quint32>()> exitCode;
+        int timeoutMs = 15000;
+    };
     explicit ManagerController(bool diagnostic, QObject* parent = nullptr, Exchange exchange = {});
+    ManagerController(bool diagnostic, QObject* parent, Exchange exchange, LaunchHooks launcher);
     ~ManagerController() override;
     CatalogClient* catalog() const { return catalog_; }
     Q_INVOKABLE void installCatalogPackage();
@@ -40,6 +50,11 @@ class ManagerController : public QObject {
     QVariantMap status() const { return status_; }
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void startCore();
+    Q_INVOKABLE void enableAutoStart();
+    Q_INVOKABLE QString diagnosticText() const;
+    Q_INVOKABLE void copyDiagnostics();
+    QString launchState() const { return launchState_; }
+    QString launchError() const { return launchError_; }
     Q_INVOKABLE void importScene(const QUrl& path);
     Q_INVOKABLE void apply(const QString& monitor, const QString& scene);
     Q_INVOKABLE void favorite(const QString& scene, bool enabled);
@@ -67,6 +82,12 @@ class ManagerController : public QObject {
     void tick();
     void accept(const Task& task, const aetherwall::Json& value);
     void mutate(const std::string& command, aetherwall::Json params);
+    void checkStartup();
+    QString logDirectory() const;
+    LaunchHooks launcher_;
+    QElapsedTimer startupClock_;
+    QString launchState_ = "checking", launchError_;
+    bool autoStart_ = false, launchAttempted_ = false;
     bool diagnostic_ = false, connected_ = false, pendingMutation_ = false, hasFuture_ = false;
     QString error_;
     QVariantList scenes_, monitors_, metrics_;

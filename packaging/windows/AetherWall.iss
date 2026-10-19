@@ -54,6 +54,7 @@ Source: "{#PayloadDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 [Icons]
 Name: "{group}\AetherWall"; Filename: "{app}\AetherWall.Manager.exe"
+Name: "{group}\AetherWall Debug"; Filename: "{app}\AetherWall-Debug.cmd"
 Name: "{autodesktop}\AetherWall"; Filename: "{app}\AetherWall.Manager.exe"; Tasks: desktopicon
 
 [Run]

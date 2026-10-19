@@ -25,6 +25,16 @@ TEST(Options, DefaultRunIsFiniteAndDoesNotAttachToDesktop) {
     EXPECT_TRUE(options.vsync);
 }
 
+TEST(Options, DebugLoggingIsExplicitAndDoesNotChangeRunMode) {
+    EXPECT_FALSE(parse({}).debug);
+    const auto options = parse({L"--debug", L"--log-dir", L"diagnostics"});
+    EXPECT_TRUE(options.debug);
+    EXPECT_EQ(options.mode, RunMode::Window);
+    EXPECT_EQ(options.durationSeconds, 60);
+    EXPECT_EQ(options.logDirectory, std::filesystem::path(L"diagnostics"));
+    EXPECT_THROW(parse({L"--debug", L"--debug"}), std::invalid_argument);
+}
+
 TEST(Options, AcceptsExplicitDesktopAndComparisonSettings) {
     const auto options = parse({L"--mode", L"desktop", L"--fps", L"15", L"--duration", L"300",
                                 L"--swap-chain", L"blt", L"--no-vsync"});

@@ -145,7 +145,7 @@ jobs:
             out/reports/release-smoke/
             out/reports/release-dependencies.txt
             out/build/win-msvc-release/Testing/Temporary/
-            out/build/win-msvc-release/apps/manager/catalog-results.txt
+            out/build/win-msvc-release/apps/manager/*-results.txt
             out/build/win-msvc-release/CMakeFiles/CMakeConfigureLog.yaml
 
   publish:

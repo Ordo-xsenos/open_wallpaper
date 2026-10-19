@@ -11,3 +11,5 @@ __pycache__/
 .venv/
 *.egg-info/
 server/.env
+/build-evidence-*.zip
+/.impeccable/review/

@@ -1,7 +1,9 @@
+#include "DebugLog.h"
 #include "ManagerController.h"
 #include "aetherwall_version.h"
 #ifdef _WIN32
 #include "system/WindowsSupport.h"
+#include <shellapi.h>
 #endif
 #include <QDebug>
 #include <QGuiApplication>
@@ -20,6 +22,22 @@
 #endif
 
 int main(int argc, char* argv[]) {
+    QStringList startupArguments;
+#ifdef _WIN32
+    int nativeCount = 0;
+    auto** nativeArguments = CommandLineToArgvW(GetCommandLineW(), &nativeCount);
+    if (!nativeArguments)
+        return 2;
+    for (int index = 0; index < nativeCount; ++index)
+        startupArguments.append(QString::fromWCharArray(nativeArguments[index]));
+    LocalFree(nativeArguments);
+#else
+    for (int index = 0; index < argc; ++index)
+        startupArguments.append(QString::fromLocal8Bit(argv[index]));
+#endif
+    if (!DebugLog::initialize(startupArguments))
+        return 2;
+    DebugLog::write("Entering Manager startup before QGuiApplication");
 #ifdef _WIN32
     aetherwall::UniqueHandle runningMutex(
         CreateMutexW(nullptr, FALSE, L"Local\\AetherWall.Manager.Running"));
@@ -35,6 +53,7 @@ int main(int argc, char* argv[]) {
     app.setWindowIcon(QIcon("qrc:/qt/qml/AetherWall/Manager/assets/aetherwall.png"));
     QQuickStyle::setStyle("Fusion");
     QImageReader::setAllocationLimit(32);
+    DebugLog::write("QGuiApplication initialized; executable=" + app.applicationFilePath());
     const auto args = app.arguments();
     const bool capture = args.contains("--capture");
     QLocalServer instance;
@@ -42,6 +61,8 @@ int main(int argc, char* argv[]) {
         QLocalSocket existing;
         existing.connectToServer("AetherWall-Manager-v1");
         if (existing.waitForConnected(150)) {
+            DebugLog::write("Another Manager instance is already running; activating it. Exit "
+                            "AetherWall completely before a debug session.");
             existing.write("activate");
             existing.waitForBytesWritten(150);
             return 0;
@@ -64,7 +85,20 @@ int main(int argc, char* argv[]) {
                                                       {"params", {{"settings", settings}}}}
                                          .dump());
         }
-        transport = [&](const std::string& bytes) { return harness->service->handle(bytes); };
+        transport = [&](const std::string& bytes) {
+            if (args.contains("--test-disconnect") &&
+                aetherwall::parseJson(bytes).at("command") == "getMetrics")
+                throw std::runtime_error(
+                    "TEST: Core transport disconnected after loading displays.");
+            auto response = aetherwall::parseJson(harness->service->handle(bytes));
+            if (args.contains("--test-render-failure") &&
+                aetherwall::parseJson(bytes).at("command") == "getStatus") {
+                response["result"]["renderState"] = "failed";
+                response["result"]["renderError"] =
+                    "TEST: Desktop attachment unavailable. Library remains connected.";
+            }
+            return response.dump();
+        };
     }
 #endif
     ManagerController controller(args.contains("--core-window"), nullptr, std::move(transport));
@@ -74,8 +108,11 @@ int main(int argc, char* argv[]) {
         controller.catalog()->configure({{"catalogBaseUrl", "http://127.0.0.1:1"},
                                          {"catalogAssetOrigins", QVariantList()},
                                          {"allowLocalCatalog", true}});
+    if (!capture && !args.contains("--no-auto-core"))
+        controller.enableAutoStart();
     QQmlApplicationEngine engine;
     engine.setInitialProperties({{"controller", QVariant::fromValue(&controller)}});
+    DebugLog::write("Loading Manager QML module");
     engine.loadFromModule("AetherWall.Manager", "Main");
     if (engine.rootObjects().isEmpty())
         return 1;
@@ -118,12 +155,24 @@ int main(int argc, char* argv[]) {
                 } else if (!controller.scenes().empty())
                     window->setProperty("selected", controller.scenes().first());
             });
+        if (args.contains("--capture-delete-dialog"))
+            QTimer::singleShot(1100, &app, [window] {
+                if (auto* dialog = window->findChild<QObject*>("deleteDialog"))
+                    QMetaObject::invokeMethod(dialog, "open");
+            });
         const auto index = args.indexOf("--capture");
         if (index + 1 >= args.size())
             return 2;
         QTimer::singleShot(1500, &app, [&, path = args.at(index + 1)] {
-            app.exit(window && window->grabWindow().save(path) ? 0 : 1);
+            auto* captureWindow = window;
+            if (window && window->property("page").toInt() >= 3)
+                if (auto* settings = window->findChild<QQuickWindow*>("settingsWindow"))
+                    captureWindow = settings;
+            app.exit(captureWindow && captureWindow->grabWindow().save(path) ? 0 : 1);
         });
     }
-    return app.exec();
+    DebugLog::write("Manager window ready; entering event loop");
+    const auto result = app.exec();
+    DebugLog::write("Manager event loop exited; code=" + QString::number(result));
+    return result;
 }

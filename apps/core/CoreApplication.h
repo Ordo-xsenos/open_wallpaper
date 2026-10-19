@@ -82,6 +82,8 @@ class CoreApplication {
     std::unique_ptr<ControlService> service_;
     std::unique_ptr<NamedPipeServer> ipc_;
     TrayController tray_;
+    std::string renderState_ = "initializing", renderError_;
+    bool renderFailed_ = false;
     Json lastMetrics_ = Json::array();
     bool ipcReady_ = false, openManager_ = false, trayPause_ = false, restoreTray_ = false;
     bool assignmentsEnabled_ = false;

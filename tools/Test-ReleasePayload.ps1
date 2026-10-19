@@ -47,13 +47,38 @@ function Invoke-PayloadCheck {
 }
 
 Invoke-PayloadCheck -Executable 'AetherWall.Core.exe' -Arguments @('--help') -Name 'core-help'
+# Exercise real graphics initialization and shutdown using software D3D11 in a
+# bounded window. Desktop/Shell integration still requires a real Windows desktop.
+Invoke-PayloadCheck -Executable 'AetherWall.Core.exe' -Arguments @('--debug','--mode','window','--warp','--duration','2','--log-dir',(Join-Path $reports 'core-window'),'--data-dir',(Join-Path $reports 'core-window-data')) -Name 'core-window-warp'
 foreach ($scene in Get-ChildItem -LiteralPath (Join-Path $payload 'scenes/bundled') -Directory) {
     Invoke-PayloadCheck -Executable 'AetherWall.SceneCheck.exe' -Arguments @($scene.FullName) -Name "scene-$($scene.Name)"
 }
 $capture = Join-Path $reports 'manager-startup.png'
 if (Test-Path -LiteralPath $capture) { Remove-Item -LiteralPath $capture }
-Invoke-PayloadCheck -Executable 'AetherWall.Manager.exe' -Arguments @('--capture', $capture) -Name 'manager-startup'
+Invoke-PayloadCheck -Executable 'AetherWall.Manager.exe' -Arguments @('--debug', '--debug-dir', (Join-Path $reports 'debug-session'), '--capture', $capture) -Name 'manager-startup'
 if (-not (Test-Path -LiteralPath $capture -PathType Leaf) -or (Get-Item -LiteralPath $capture).Length -eq 0) {
     throw 'Manager did not produce its QML startup capture.'
 }
 Write-Host "Staged runtime checks passed with a clean PATH. Evidence: $reports"
+
+foreach ($scriptName in @('Start-AetherWallDebug.ps1','Collect-AetherWallDiagnostics.ps1')) {
+    # Parse the interactive launcher without starting another UI or waiting for input.
+    [void][scriptblock]::Create((Get-Content -LiteralPath (Join-Path $payload $scriptName) -Raw))
+}
+$session = Join-Path $reports 'debug-session'
+if (@(Get-ChildItem -LiteralPath $session -Filter 'manager_*.log' -File).Count -eq 0) {
+    throw 'Debug Manager did not create a diagnostic log.'
+}
+$archive = & (Join-Path $payload 'Collect-AetherWallDiagnostics.ps1') -SessionDirectory $session
+if (-not (Test-Path -LiteralPath $archive -PathType Leaf)) { throw 'Diagnostic archive was not created.' }
+
+$unpackedDiagnostics = Join-Path $reports ('diagnostics-check-' + [Guid]::NewGuid().ToString('N'))
+try {
+    Expand-Archive -LiteralPath $archive -DestinationPath $unpackedDiagnostics
+    if (-not (Test-Path -LiteralPath (Join-Path $unpackedDiagnostics 'system.json')) -or
+        @(Get-ChildItem -LiteralPath $unpackedDiagnostics -Filter 'manager_*.log' -File).Count -eq 0) {
+        throw 'Diagnostic ZIP is missing system information or Manager logs.'
+    }
+} finally {
+    if (Test-Path -LiteralPath $unpackedDiagnostics) { Remove-Item -LiteralPath $unpackedDiagnostics -Recurse -Force }
+}
